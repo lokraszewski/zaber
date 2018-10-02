@@ -12,6 +12,9 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include <spdlog/spdlog.h>
 
+#include "zaber/zaber.h"
+#include "zaber/zaber_ascii.h"
+
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -24,6 +27,21 @@ static auto m_log = spdlog::stdout_color_mt("app");
 int run(int argc, char **argv)
 {
   spdlog::set_level(spdlog::level::trace);
+
+  m_log->info("Zaber deivces: {}", zaber::Device::device_count());
+  {
+    zaber::Device stage1(1u);
+
+    m_log->info("Zaber deivces: {}", zaber::Device::device_count());
+
+    stage1.emergency_stop();
+    stage1.help();
+    stage1.help("home");
+    stage1.home();
+    stage1.get<int>("some_param_nameake");
+  }
+  m_log->info("Zaber deivces: {}", zaber::Device::device_count());
+
   /* TODO: Implement example. */
   return 0;
 }
