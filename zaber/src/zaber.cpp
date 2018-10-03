@@ -66,6 +66,24 @@ std::ostream& operator<<(std::ostream& os, const Status& sts)
   return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const Command& cmd)
+{
+
+  switch (cmd)
+  {
+  case Command::None: os << ""; break;
+  case Command::MoveAbsolute: os << "move abs"; break;
+  case Command::MoveRelative: os << "move rel"; break;
+  case Command::MoveVelocity: os << "move vel"; break;
+  case Command::MoveMin: os << "move min"; break;
+  case Command::MoveMax: os << "move max"; break;
+  case Command::Home: os << "home"; break;
+  case Command::Get: os << "get"; break;
+  }
+
+  return os;
+}
+
 std::shared_ptr<spdlog::logger> Device::m_log          = spdlog::stdout_color_mt("zaber");
 size_t                          Device::m_device_count = 0;
 

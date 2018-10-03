@@ -55,9 +55,27 @@ int run(int argc, char **argv)
   {
     zaber::Device stage(port);
     m_log->info("is_connected : {}", stage.is_connected());
-    m_log->info("is_busy : {}", stage.is_busy());
+    m_log->info("ID: {}", stage.get_device_id());
+
     stage.home();
     m_log->info("is_busy : {}", stage.is_busy());
+
+    while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
+    ;
+
+    m_log->info("Position : {}", stage.get_position());
+
+    // stage.move_min();
+    // while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
+    // ;
+    // m_log->info("Position : {}", stage.get_position());
+
+    // stage.move_max();
+    // while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
+    // ;
+    // m_log->info("Position : {}", stage.get_position());
+
+    // m_log->info("Stage at home", stage.is_busy());
 
     // stage.emergency_stop();
     // stage.help("home");

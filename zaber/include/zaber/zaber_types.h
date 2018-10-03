@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <map>
-#include <string>
+#include <sstream>
 
 /*
  * @Author: Lukasz
@@ -165,5 +165,24 @@ inline Status get_status(const std::string str)
   const std::map<std::string, Status> m = {{"IDLE", Status::IDLE}, {"BUSY", Status::BUSY}};
   return m.at(str);
 }
+
+enum class Command
+{
+  MoveAbsolute,
+  MoveRelative,
+  MoveVelocity,
+  MoveMin,
+  MoveMax,
+  Home,
+  Get,
+  None,
+};
+
+std::ostream& operator<<(std::ostream& os, const Command& cmd);
+
+enum class DeviceID
+{
+  X_RSW60A_E03 = 50009,
+};
 
 } // namespace zaber

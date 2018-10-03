@@ -15,14 +15,13 @@
 #include <string>
 #include <unistd.h>
 
+#include <iostream>
+#include <math.h> /* log10 */
 #include <stdint.h>
+#include <stdio.h> /* printf */
 #include <stdlib.h>
 #include <string>
 #include <vector>
-
-#include <iostream>
-#include <math.h>  /* log10 */
-#include <stdio.h> /* printf */
 
 namespace zaber
 {
@@ -145,20 +144,15 @@ public:
 
   bool is_busy(void) const
   {
-    m_port->write(fmt::format("/{}\n", m_address));
-    const auto reply = get_reply();
-    m_log->trace("{}:{}", __FUNCTION__, reply.status);
+    const auto reply = send_command(Command::None);
     return reply.status == Status::BUSY;
   }
 
   bool is_connected(void)
   {
-    m_port->write(fmt::format("/{}\n", m_address));
-
     try
     {
-      const auto reply = get_reply();
-      m_log->trace("{}:{}", __FUNCTION__, true);
+      const auto reply = send_command(Command::None);
       return true;
     }
     catch (const std::exception& e)
@@ -207,6 +201,35 @@ public:
     return 0;
   }
 
+  // void send_command(uint address, int axis, std::string command, std::string subcommand, T param)
+  // {
+  // }
+
+  // template <typename T>
+  // void send_command(const Command command, T param)
+  // {
+  //   const auto command = fmt::format("/{} {} {}\r", m_address, command);
+
+  //   m_log->trace("Sending command: [{}]", command);
+  //   m_port->write(command);
+  // }
+  template <typename T>
+  Reply send_command(const Command command, const T param) const
+  {
+    const auto packet = fmt::format("/{} {} {}\n", m_address, command, param);
+    m_log->trace("Command: [{},{}, {}]", m_address, command, param);
+    m_port->write(packet);
+    return get_reply();
+  }
+
+  Reply send_command(const Command command) const
+  {
+    const auto packet = fmt::format("/{} {}\n", m_address, command);
+    m_log->trace("Command: [{},{}]", m_address, command);
+    m_port->write(packet);
+    return get_reply();
+  }
+
   /**
    * \date       03-Oct-2018
    * \brief      Gets the reply.
@@ -220,16 +243,17 @@ public:
   {
     const auto MAX_REPLY_LENGTH = 50;
     auto       response         = m_port->readlines(MAX_REPLY_LENGTH, "\n");
+
+    // If we dont get a response then log and throw since this function must
+    // return reply.
     if (response.size() == 0)
     {
-      throw std::runtime_error("No response from device!");
+      const auto err = "No response from device!";
+      m_log->trace("{}", err);
+      throw std::runtime_error(err);
     }
 
-    for (auto s : response)
-    {
-      m_log->trace("{}", s);
-    }
-
+    // Parse the response with reply constructor.
     Reply reply(response[0]);
 
     m_log->trace("Reply: {}", reply);
@@ -248,20 +272,7 @@ public:
    *
    * \details    { detailed_item_description }
    */
-  std::string help(const std::string param = "") const
-  {
-    m_log->error("{} {}, NOT IMPLEMENTED", __FUNCTION__, param);
-    const auto command = fmt::format("/{} help {}\r", m_address, param);
-
-    m_log->trace("Sending command: [{}]", command);
-    m_port->write(command);
-
-    const auto reply = get_reply();
-
-    // m_log->trace("Response: [{}]", reply);
-
-    return "";
-  }
+  std::string help(const std::string param = "") const { return ""; }
 
   /**
    \author     lokraszewski
@@ -283,12 +294,7 @@ public:
                to obtain a reference position.Otherwise, motion commands may
                respond with a rejection reply or behave unexpectedly.
   */
-  void home(void) const
-  {
-    m_port->write(fmt::format("/{} home\n", m_address));
-    const auto reply = get_reply();
-    m_log->trace("{}:{}", __FUNCTION__, reply.flag);
-  }
+  void home(void) const { const auto reply = send_command(Command::Home); }
   /**
    * \author     lokraszewski
    * \date       03-Oct-2018
@@ -298,7 +304,7 @@ public:
    *
    * \details    { detailed_item_description }
    */
-  void move_absolute(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
+  void move_absolute(int value) { const auto reply = send_command<>(Command::MoveAbsolute, value); }
 
   /**
    * \author     lokraszewski
@@ -311,7 +317,7 @@ public:
    *
    * \details    { detailed_item_description }
    */
-  void move_relative(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
+  void move_relative(int value) { const auto reply = send_command<>(Command::MoveRelative, value); }
 
   /**
    * \author     lokraszewski
@@ -324,7 +330,7 @@ public:
    *
    * \details    { detailed_item_description }
    */
-  void move_velocity(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
+  void move_velocity(int value) { const auto reply = send_command<>(Command::MoveVelocity, value); }
 
   /**
    * \author     lokraszewski
@@ -334,7 +340,7 @@ public:
    *
    * \details    { detailed_item_description }
    */
-  void move_min(void) { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
+  void move_min(void) { const auto reply = send_command(Command::MoveMin); }
 
   /**
    * \author     lokraszewski
@@ -344,7 +350,7 @@ public:
    *
    * \details    { detailed_item_description }
    */
-  void move_max(void) { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
+  void move_max(void) { const auto reply = send_command(Command::MoveMax); }
 
   /**
    * \author     lokraszewski
@@ -427,6 +433,24 @@ public:
     m_log->error("{}:{} {} {}  NOT IMPLEMENTED", __FUNCTION__, amplitude, period, count);
   }
 
+  uint get_device_id(void)
+  {
+    const auto        reply = send_command<>(Command::Get, "deviceid");
+    std::stringstream ss(reply.payload);
+    uint              id;
+    ss >> id;
+    return id;
+  }
+
+  int get_position(void)
+  {
+    const auto        reply = send_command<>(Command::Get, "pos");
+    std::stringstream ss(reply.payload);
+    int               pos;
+    ss >> pos;
+    return pos;
+  }
+
   static size_t device_count(void) { return m_device_count; }
 
 private:
@@ -436,6 +460,15 @@ private:
 protected:
   Address m_address;
   Port    m_port;
+};
+
+class DeviceFactory
+{
+
+public:
+  DeviceFactory()  = delete;
+  ~DeviceFactory() = delete;
+  // static
 };
 
 } // namespace zaber

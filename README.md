@@ -18,7 +18,8 @@ make
 <!-- * [X-RSW-E Rotary Stage](https://www.zaber.com/products/rotary-stages/X-RSW-E) -->
 
 ## TODOs ##
-* 
+* Support multi axis devices. 
+* Support binary protocol.
 
 
 ## Relevant Reading ##
