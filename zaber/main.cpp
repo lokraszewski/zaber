@@ -10,6 +10,7 @@
 
 #include "serial/serial.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include <cxxopts.hpp>
 #include <spdlog/spdlog.h>
 
 #include "zaber/zaber.h"
@@ -26,23 +27,44 @@ static auto m_log = spdlog::stdout_color_mt("app");
 
 int run(int argc, char **argv)
 {
-  spdlog::set_level(spdlog::level::trace);
 
-  m_log->info("Zaber deivces: {}", zaber::Device::device_count());
+  cxxopts::Options options("MyProgram", "One line description of MyProgram");
   {
-    zaber::Device stage1(1u);
-
-    m_log->info("Zaber deivces: {}", zaber::Device::device_count());
-
-    stage1.emergency_stop();
-    stage1.help();
-    stage1.help("home");
-    stage1.home();
-    stage1.get<int>("some_param_nameake");
+    options.add_options()("h,help", "Show help.");
+    options.add_options()("d,debug", "Debug level output.", cxxopts::value<int>()->default_value("2"));
+    options.add_options()("p,port", "Serial port path.", cxxopts::value<std::string>()->default_value("/dev/ttyUSB0"));
+    options.add_options()("t,timeout", "Timeout level (ms)", cxxopts::value<int>()->default_value("10"));
   }
-  m_log->info("Zaber deivces: {}", zaber::Device::device_count());
 
-  /* TODO: Implement example. */
+  auto result = options.parse(argc, argv);
+  spdlog::set_level(static_cast<spdlog::level::level_enum>(result["debug"].as<int>()));
+
+  if (result["help"].count())
+  {
+    std::cout << options.help();
+    return 0;
+  }
+
+  const auto port_path     = result["port"].as<std::string>();
+  const auto timeout_level = result["timeout"].as<int>();
+
+  m_log->info("Creating port: {}", port_path);
+  auto port = std::make_shared<serial::Serial>(port_path, 115200, serial::Timeout::simpleTimeout(timeout_level));
+  m_log->info("Port {} open.", port->isOpen() ? "" : "not");
+
+  {
+    zaber::Device stage(port);
+    stage.is_connected();
+    // stage.emergency_stop();
+    // stage.help("home");
+    // stage.home();
+    // stage.get<int>("some_param_nameake");
+    // stage.move_absolute(10);
+    // stage.move_relative(10);
+    // stage.move_min();
+    // stage.move_max();
+  }
+
   return 0;
 }
 

@@ -27,44 +27,106 @@ namespace zaber
 {
 
 /*
- Talking to Zaber Devices
-Zaber devices listen for Commands sent to them over a serial port and then immediately respond with a Reply. Commands always begin with a /
-and end with a newline. Some commands take parameters, which are separated by spaces. Two example commands are:
+ Replies
+A reply is sent by the device as soon as it has received a command and determined if it should respond. A typical response message and
+associated fields are:
 
-/1 help↵
-/1 move abs 10000↵
-Where the move command has parameters of abs and 10000.
-
-Replies begin with a @, have 4 or more parameters and end with a newline. For example, the most common reply is:
-
-@01 0 OK IDLE -- 0
-Which can be broken down into:
-
-@                    A Reply
- 01                  The ID of the device sending the reply
-    0                The reply scope. 0 for the device or all axes, 1 onwards for an individual axis.
-      OK             The command succeeded.
-          IDLE       The device isn't moving, otherwise BUSY if it is moving.
-               --    No faults or warnings in the device
-                  0  The return value, typically 0.
-A complete description of the reply fields is available in the Replies section.
-
-Devices can also send two other types of messages; Alerts, starting with ! and Info, starting with #. Info messages are commonly seen in
-response to a help command.
-
+@01 0 OK IDLE -- 0↵
+@nn a fl bbbb ww x[:CC]ff
+@ - Message Type
+Length: 1 byte.
+This field always contains @ for a reply message.
+nn - Device Address
+Length: 2 bytes.
+This field contains the address of the device sending the reply, always formatted as two digits.
+a - Axis Number
+Length: 1 byte.
+This field contains the reply scope, from 0 to 9. 0 indicates that the following fields apply to the whole device and all axes on it,
+otherwise the fields apply to the specific axis indicated. fl - Reply Flag Length: 2 bytes. The reply flag indicates if the message was
+accepted or rejected and can have the following values: OK - The command was valid and accepted by the device. RJ - The command was
+rejected. The data field of the message will contain one of the following reasons: AGAIN - The command cannot be processed right now. The
+user or application should send the command again. Occurs only during streamed motion. BADAXIS - The command was sent with an axis number
+greater than the number of axes available. BADCOMMAND - The command or setting is incorrect or invalid. BADDATA - The data provided in the
+command is incorrect or out of range. BADMESSAGEID - A message ID was provided, but was not either -- or a number from 0 to 99. DEVICEONLY -
+An axis number was specified when trying to execute a device only command. FULL - The device has run out of permanent storage and cannot
+accept the command. Occurs when storing to a stream buffer or when saving commands to joystick keys. LOCKSTEP - An axis cannot be moved
+using normal motion commands because it is part of a lockstep group. You must use lockstep commands for motion or disable the lockstep group
+first. NOACCESS - The command or setting is not available at the current access level. PARKED - The device cannot move because it is
+currently parked. STATUSBUSY - The device cannot be parked, nor can certain settings be changed, because it is currently busy. bbbb - Device
+Status Length: 4 bytes. This field contains BUSY when the axis is moving and IDLE otherwise. All movement commands, including stop, put the
+axis into the BUSY state, while they are being executed. During streamed motion, wait commands are considered to be busy, not idle. If the
+reply message applies to the whole device, the status is BUSY if any axis is busy and IDLE if all axes are idle. ww - Warning Flag Length: 2
+bytes. Contains the highest priority warning currently active for the device or axis, or -- under normal conditions. A full description of
+the flags is available in the Warning Flags Section. xxx.. - Response Data Length: 1+ bytes. The response for the command executed. The
+contents and format of this field vary depending on the command, but is typically 0 (zero). CC - Message Checksum Length: 3 bytes. A device
+will append a checksum to all replies if the comm.checksum setting is configured to 1. More information and code examples are provided in
+the Checksumming section below. ff - Message Footer Length: 2 bytes. This field always contains a CR-LF combination (\r\n) for a reply
+message.
  */
+
+/**
+ * @author     lokraszewski
+ * @date       03-Oct-2018
+ * @brief      Reply structure.
+ *
+ * @details    Format:
+ * @code
+ * nn a fl bbbb ww x[:CC]ff
+ * @endcode
+ */
+struct Reply
+{
+public:
+  int         address;
+  int         scope;
+  std::string flag;
+  std::string status;
+  std::string warning;
+  std::string payload;
+
+  Reply(void) {}
+  Reply(std::string reply)
+  {
+    std::istringstream       iss(reply);
+    std::vector<std::string> tokens(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
+
+    for (auto s : tokens)
+    {
+      std::cout << s << std::endl;
+    }
+    auto itr = tokens.begin();
+    char sof;
+    sscanf((*itr++).c_str(), "%c%d", &sof, &address);
+    sscanf((*itr++).c_str(), "%d", &scope);
+    flag    = *itr++;
+    status  = *itr++;
+    warning = *itr++;
+    payload = *itr++;
+  }
+  ~Reply() {}
+};
+
 class Device
 {
 
 public:
-  typedef uint8_t     Address;
-  typedef std::string Setting;
+  typedef uint8_t                         Address;
+  typedef std::string                     Setting;
+  typedef std::shared_ptr<serial::Serial> Port;
 
-  Device(const Address address) : m_address(address)
+  Device(Port port, const Address address = 1) : m_address(address), m_port(port)
   {
-    m_device_count++;
     m_log->trace("{} with address of {}", __FUNCTION__, m_address);
+    if (m_port == nullptr)
+    {
+      m_log->error("Serial port cannot be null!");
+      throw std::invalid_argument("Serial port cannot be null!");
+    }
+    m_device_count++;
   }
+
+  Device() = delete; // Delete default constructor.
+
   virtual ~Device()
   {
     m_device_count--;
@@ -75,9 +137,33 @@ public:
   {
     // Send empty command to the device address.
     // Wait and parse response.
+    return true;
   }
 
-  bool is_connected(void) {}
+  bool is_connected(void)
+  {
+    m_port->write(fmt::format("/{}\n", m_address));
+
+    try
+    {
+      const auto reply = get_reply();
+      m_log->error("{}:{}", __FUNCTION__, true);
+      return true;
+    }
+    catch (const std::exception& e)
+    {
+      m_log->error("{}:{}", __FUNCTION__, e.what());
+      return false;
+    }
+  }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      Decelerates an axis and brings it to a halt.
+   *
+   */
+  void stop(void) const { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
 
   /**
 
@@ -111,6 +197,42 @@ public:
     return 0;
   }
 
+  Reply get_reply(void) const
+  {
+    const auto MAX_REPLY_LENGTH = 50;
+    /*
+     @                    A Reply
+ 01                  The ID of the device sending the reply
+    0                The reply scope. 0 for the device or all axes, 1 onwards for an individual axis.
+      OK             The command succeeded.
+          IDLE       The device isn't moving, otherwise BUSY if it is moving.
+               --    No faults or warnings in the device
+                  0  The return value, typically 0.
+     */
+
+    auto response = m_port->readlines(MAX_REPLY_LENGTH, "\n");
+    if (response.size() == 0)
+    {
+      throw std::runtime_error("No response from device!");
+    }
+
+    for (auto s : response)
+    {
+      m_log->trace("{}", s);
+    }
+
+    Reply reply(response[0]);
+
+    m_log->trace("address: {}", reply.address);
+    m_log->trace("scope: {}", reply.scope);
+    m_log->trace("flag: {}", reply.flag);
+    m_log->trace("status: {}", reply.status);
+    m_log->trace("warning: {}", reply.warning);
+    m_log->trace("payload: {}", reply.payload);
+
+    return reply;
+  }
+
   /**
    * @author     lokraszewski
    * @date       02-Oct-2018
@@ -131,6 +253,15 @@ public:
   std::string help(const std::string param = "") const
   {
     m_log->error("{} {}, NOT IMPLEMENTED", __FUNCTION__, param);
+    const auto command = fmt::format("/{} help {}\r", m_address, param);
+
+    m_log->trace("Sending command: [{}]", command);
+    m_port->write(command);
+
+    const auto reply = get_reply();
+
+    // m_log->trace("Response: [{}]", reply);
+
     return "";
   }
 
@@ -156,6 +287,128 @@ public:
   */
   void home(void) const { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
 
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      abs moves to the absolute position of value.
+   *
+   * @param[in]  value  Value must be in the range [ limit.min, limit.max ].
+   */
+  void move_absolute(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      rel moves the axis by value microsteps, relative to the current position.
+   *
+   * @param[in]  value  Value must be in the range [ limit.min - pos, limit.max - pos ].
+   */
+  void move_relative(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      vel moves the axis at the velocity specified by value until a
+   *             limit is reached.
+   *
+   * @param[in]  value  Value must be in the range [ -resolution * 16384,
+   *                    resolution * 16384 ].
+   */
+  void move_velocity(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      min moves the axis to the minimum position, as specified by limit.min.
+   */
+  void move_min(void) { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      max moves the axis to the maximum position, as specified by limit.max.
+   */
+  void move_max(void) { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      stored moves the axis to a previously stored position.Refer to
+   *             the tools storepos command for more information.
+   *
+   * @param[in]  number  Number specifies the stored position number, from 1 -
+   *                     16.
+   */
+  void move_stored(uint8_t position) { m_log->error("{}:{}, NOT IMPLEMENTED", position, __FUNCTION__); }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      index moves the axis to an index position. For a provided
+   *             number, this command directs the axis to move to the absolute
+   *             position (number - 1) * motion.index.dist.
+   *
+   * @param[in]  index  Note that only positive values of number are accepted.
+   *
+   * @details    For rotary devices with a non-zero limit.cycle.dist, the
+   *             command will be accepted if the targeted position is greater or
+   *             equal to 0 and less than limit.cycle.dist. The device will move
+   *             either clockwise or counter-clockwise, depending on which
+   *             direction yields the shortest distance to the target position.
+   *             If you want all index positions to be equally spaced around the
+   *             circle, set motion.index.dist to a factor of limit.cycle.dist.
+   *             For linear devices, or rotary devices where limit.cycle.dist is
+   *             zero, the command will be accepted if the targeted position is
+   *             within the valid travel of the device, i.e. in the range [
+   *             limit.min, limit.max ].
+   */
+  void move_index(unsigned int index) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, index); }
+
+  /**
+   * @author     lokraszewski
+   * @date       03-Oct-2018
+   * @brief      sin starts a sinusoidal motion.
+   *
+   * @param[in]  amplitude  The amplitude
+   * @param[in]  period     The period
+   * @param[in]  count      The count
+   *
+   * @details    Amplitude specifies half of the peak-to-peak amplitude of the
+   *             motion in units of microsteps. A positive number implies that
+   *             the sinusoidal *motion starts at the minimum position and will
+   *             move in a positive direction from the starting position. A
+   *             negative number implies that the *sinusoidal motion starts at
+   *             the maximum position and will move in a negative direction from
+   *             the starting position. The starting position of the device and
+   *             the other limit of the sinusoidal motion (current position +
+   *             amplitude * 2) must both be in the range [ limit.min, limit.max
+   *             ] . Period specifies the period of the motion in ms, with
+   *             resolution down to 0.1 ms. A minimum value of 1 ms is
+   *             recommended to achieve a reasonable resolution. Period must be
+   *             in the range [ 0.2, 429496729.5 ]. Count, an optional
+   *             parameter, specifies the number of repeated cycles. The valid
+   *             range is 1 - 4294967294. If count is not provided, the motion
+   *             will continue until another motion or stop command pre-empts
+   *             it. To stop the sinusoidal motion after the current cycle
+   *             completes, refer to the move sin stop command. On stepper motor
+   *             products with direct reading or linear encoders (i.e.
+   *             encoder.mode is 2), sinusoidal motion commands can only be
+   *             executed when cloop.mode is set to 2 or 0. sinusoidal motion
+   *             illustration The speed and acceleration of a sinusoidal motion
+   *             are determined by the amplitude and period specified in the
+   *             command, as shown in the following equation. It is up to the
+   *             user to ensure the maximum acceleration is low enough to
+   *             prevent the stage from slipping. v_{max} = |Amplitude|
+   *             \frac{2\pi}{Period} a_{max} = |Amplitude| \left(
+   *             \frac{2\pi}{Period} \right) ^2 Note: A sinusoidal motion has
+   *             limited ability to recover from a stalling condition. sin stop
+   *             ends a sinusoidal motion when its current cycle completes.
+   */
+  void move_sin(int amplitude, int period, int count = 0)
+  {
+    m_log->error("{}:{} {} {}  NOT IMPLEMENTED", __FUNCTION__, amplitude, period, count);
+  }
+
   static size_t device_count(void) { return m_device_count; }
 
 private:
@@ -164,6 +417,7 @@ private:
 
 protected:
   Address m_address;
+  Port    m_port;
 };
 
 } // namespace zaber
