@@ -2,7 +2,7 @@
 * @Author: Lukasz
 * @Date:   02-10-2018
 * @Last Modified by:   Lukasz
-* @Last Modified time: 02-10-2018
+* @Last Modified time: 03-10-2018
 @brief      Zaber's X-RSW-E Series products are computer controlled motorized
             rotary stages with integrated controllers and motor encoders. They
             are stand-alone units requiring only a standard 24-48 V power
@@ -20,3 +20,14 @@
 */
 
 #pragma once
+
+#include "zaber/zaber.h"
+
+namespace zaber
+{
+
+// class DeviceRotary : public Device
+// {
+// };
+
+} // namespace zaber

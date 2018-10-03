@@ -1,7 +1,5 @@
 # Zaber 
-WORK IN PROGRESS! 
-The work on this project is currently ongoing and
-there are no ready devices at this point.  C++ driver for the Zaber family.
+C++ interface for Zaber family stages. Currently only one stage is supported. This project is still under development and in its early days so everything is subject to change. .
 
 ## Prerequisites
 * [cmake](https://cmake.org/)
@@ -14,12 +12,18 @@ cmake ..
 make
 ```
 
+## Running examples:
+```
+./bin/zaber_app --help
+```
+
 ## Currently supported devices: ##
-<!-- * [X-RSW-E Rotary Stage](https://www.zaber.com/products/rotary-stages/X-RSW-E) -->
+* [X-RSW-E Rotary Stage](https://www.zaber.com/products/rotary-stages/X-RSW-E)
 
 ## TODOs ##
 * Support multi axis devices. 
 * Support binary protocol.
+* Support multiple devices (chain configuration)
 
 
 ## Relevant Reading ##

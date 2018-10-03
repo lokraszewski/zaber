@@ -230,6 +230,8 @@ public:
     return get_reply();
   }
 
+  // std::vector<Reply> send_broadcast(const Command command) const {}
+
   /**
    * \date       03-Oct-2018
    * \brief      Gets the reply.
@@ -460,15 +462,6 @@ private:
 protected:
   Address m_address;
   Port    m_port;
-};
-
-class DeviceFactory
-{
-
-public:
-  DeviceFactory()  = delete;
-  ~DeviceFactory() = delete;
-  // static
 };
 
 } // namespace zaber
