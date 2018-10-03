@@ -54,7 +54,11 @@ int run(int argc, char **argv)
 
   {
     zaber::Device stage(port);
-    stage.is_connected();
+    m_log->info("is_connected : {}", stage.is_connected());
+    m_log->info("is_busy : {}", stage.is_busy());
+    stage.home();
+    m_log->info("is_busy : {}", stage.is_busy());
+
     // stage.emergency_stop();
     // stage.help("home");
     // stage.home();

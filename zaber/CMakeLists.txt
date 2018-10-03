@@ -2,6 +2,7 @@
 set(TARGET_LIB_NAME ${CMAKE_PROJECT_NAME}_lib)
 
 add_library(${TARGET_LIB_NAME}
+  include/zaber/zaber_types.h
   include/zaber/zaber.h
   include/zaber/zaber_ascii.h
   src/zaber.cpp

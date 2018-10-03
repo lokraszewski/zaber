@@ -1,8 +1,9 @@
 #pragma once
 
-// OS Specific sleep
-// #include "bit_macro.hpp" //Bit fields.
+#include "zaber_types.h"
+
 #include "fmt/format.h"
+#include "fmt/ostream.h"
 #include "serial/serial.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include <cstdio>
@@ -26,63 +27,71 @@
 namespace zaber
 {
 
-/*
- Replies
-A reply is sent by the device as soon as it has received a command and determined if it should respond. A typical response message and
-associated fields are:
-
-@01 0 OK IDLE -- 0↵
-@nn a fl bbbb ww x[:CC]ff
-@ - Message Type
-Length: 1 byte.
-This field always contains @ for a reply message.
-nn - Device Address
-Length: 2 bytes.
-This field contains the address of the device sending the reply, always formatted as two digits.
-a - Axis Number
-Length: 1 byte.
-This field contains the reply scope, from 0 to 9. 0 indicates that the following fields apply to the whole device and all axes on it,
-otherwise the fields apply to the specific axis indicated. fl - Reply Flag Length: 2 bytes. The reply flag indicates if the message was
-accepted or rejected and can have the following values: OK - The command was valid and accepted by the device. RJ - The command was
-rejected. The data field of the message will contain one of the following reasons: AGAIN - The command cannot be processed right now. The
-user or application should send the command again. Occurs only during streamed motion. BADAXIS - The command was sent with an axis number
-greater than the number of axes available. BADCOMMAND - The command or setting is incorrect or invalid. BADDATA - The data provided in the
-command is incorrect or out of range. BADMESSAGEID - A message ID was provided, but was not either -- or a number from 0 to 99. DEVICEONLY -
-An axis number was specified when trying to execute a device only command. FULL - The device has run out of permanent storage and cannot
-accept the command. Occurs when storing to a stream buffer or when saving commands to joystick keys. LOCKSTEP - An axis cannot be moved
-using normal motion commands because it is part of a lockstep group. You must use lockstep commands for motion or disable the lockstep group
-first. NOACCESS - The command or setting is not available at the current access level. PARKED - The device cannot move because it is
-currently parked. STATUSBUSY - The device cannot be parked, nor can certain settings be changed, because it is currently busy. bbbb - Device
-Status Length: 4 bytes. This field contains BUSY when the axis is moving and IDLE otherwise. All movement commands, including stop, put the
-axis into the BUSY state, while they are being executed. During streamed motion, wait commands are considered to be busy, not idle. If the
-reply message applies to the whole device, the status is BUSY if any axis is busy and IDLE if all axes are idle. ww - Warning Flag Length: 2
-bytes. Contains the highest priority warning currently active for the device or axis, or -- under normal conditions. A full description of
-the flags is available in the Warning Flags Section. xxx.. - Response Data Length: 1+ bytes. The response for the command executed. The
-contents and format of this field vary depending on the command, but is typically 0 (zero). CC - Message Checksum Length: 3 bytes. A device
-will append a checksum to all replies if the comm.checksum setting is configured to 1. More information and code examples are provided in
-the Checksumming section below. ff - Message Footer Length: 2 bytes. This field always contains a CR-LF combination (\r\n) for a reply
-message.
- */
-
 /**
- * @author     lokraszewski
- * @date       03-Oct-2018
- * @brief      Reply structure.
- *
- * @details    Format:
- * @code
+ \author     lokraszewski
+
+ \date       03-Oct-2018
+ \brief      Reply structure.
+
+ \details    Format:
+ \code
  * nn a fl bbbb ww x[:CC]ff
- * @endcode
- */
+ *
+ \endcode
+ * - @ - Message Type Length: 1 byte. This field always contains @ for a reply
+   message.
+ - nn - Device Address Length: 2 bytes. This field contains the address of the
+   device sending the reply, always formatted as two digits.
+ - a - Axis Number Length: 1 byte. This field contains the reply scope, from 0
+   to 9. 0 indicates that the following fields apply to the whole device and all
+   axes on it, otherwise the fields apply to the specific axis indicated.
+ - fl - Reply Flag Length: 2 bytes. The reply flag indicates if the message was
+   accepted or rejected and can have the following values: OK - The command was
+   valid and accepted by the device. RJ - The command was rejected. The data
+   field of the message will contain one of the following reasons: AGAIN - The
+   command cannot be processed right now. The user or application should send
+   the command again. Occurs only during streamed motion. BADAXIS - The command
+   was sent with an axis number greater than the number of axes available.
+   BADCOMMAND - The command or setting is incorrect or invalid. BADDATA - The
+   data provided in the command is incorrect or out of range. BADMESSAGEID - A
+   message ID was provided, but was not either -- or a number from 0 to 99.
+   DEVICEONLY - An axis number was specified when trying to execute a device
+   only command. FULL - The device has run out of permanent storage and cannot
+   accept the command. Occurs when storing to a stream buffer or when saving
+   commands to joystick keys. LOCKSTEP - An axis cannot be moved using normal
+   motion commands because it is part of a lockstep group. You must use lockstep
+   commands for motion or disable the lockstep group first. NOACCESS - The
+   command or setting is not available at the current access level. PARKED - The
+   device cannot move because it is currently parked. STATUSBUSY - The device
+   cannot be parked, nor can certain settings be changed, because it is
+   currently busy.
+ - bbbb - Device Status Length: 4 bytes. This field contains BUSY when the axis
+   is moving and IDLE otherwise. All movement commands, including stop, put the
+   axis into the BUSY state, while they are being executed. During streamed
+   motion, wait commands are considered to be busy, not idle. If the reply
+   message applies to the whole device, the status is BUSY if any axis is busy
+   and IDLE if all axes are idle.
+ - ww - Warning Flag Length: 2 bytes. Contains the highest priority warning
+   currently active for the device or axis, or -- under normal conditions. A
+   full description of the flags is available in the Warning Flags Section.
+ - xxx.. - Response Data Length: 1+ bytes. The response for the command
+   executed. The contents and format of this field vary depending on the
+   command, but is typically 0 (zero). CC - Message Checksum Length: 3 bytes. A
+   device will append a checksum to all replies if the comm.checksum setting is
+   configured to 1. More information and code examples are provided in the
+   Checksumming section below.
+ - ff - Message Footer Length: 2 bytes. This field always contains a CR-LF
+   combination for a reply message.
+*/
 struct Reply
 {
 public:
-  int         address;
-  int         scope;
-  std::string flag;
-  std::string status;
-  std::string warning;
-  std::string payload;
+  int         address; /**! address*/
+  int         scope;   /**! scope*/
+  ReplyFlag   flag;    /**! flag*/
+  Status      status;  /**! status*/
+  Warning     warning; /**! warning*/
+  std::string payload; /**! payload*/
 
   Reply(void) {}
   Reply(std::string reply)
@@ -90,29 +99,30 @@ public:
     std::istringstream       iss(reply);
     std::vector<std::string> tokens(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
 
-    for (auto s : tokens)
-    {
-      std::cout << s << std::endl;
-    }
     auto itr = tokens.begin();
     char sof;
     sscanf((*itr++).c_str(), "%c%d", &sof, &address);
     sscanf((*itr++).c_str(), "%d", &scope);
-    flag    = *itr++;
-    status  = *itr++;
-    warning = *itr++;
+    flag    = get_reply_flag(*itr++);
+    status  = get_status(*itr++);
+    warning = get_warning(*itr++);
     payload = *itr++;
   }
   ~Reply() {}
+
+  friend std::ostream& operator<<(std::ostream& os, const Reply& rp)
+  {
+    return os << fmt::format("[{}, {}, {}, {}, {}, {}]", rp.address, rp.scope, rp.flag, rp.status, rp.warning, rp.payload);
+  }
 };
 
 class Device
 {
 
 public:
-  typedef uint8_t                         Address;
-  typedef std::string                     Setting;
-  typedef std::shared_ptr<serial::Serial> Port;
+  typedef uint8_t                         Address; /** Address type. */
+  typedef std::string                     Setting; /** Setting*/
+  typedef std::shared_ptr<serial::Serial> Port;    /** Serial port type. */
 
   Device(Port port, const Address address = 1) : m_address(address), m_port(port)
   {
@@ -133,11 +143,12 @@ public:
     m_log->trace("{} with address of {}", __FUNCTION__, m_address);
   }
 
-  bool is_busy(void)
+  bool is_busy(void) const
   {
-    // Send empty command to the device address.
-    // Wait and parse response.
-    return true;
+    m_port->write(fmt::format("/{}\n", m_address));
+    const auto reply = get_reply();
+    m_log->trace("{}:{}", __FUNCTION__, reply.status);
+    return reply.status == Status::BUSY;
   }
 
   bool is_connected(void)
@@ -147,7 +158,7 @@ public:
     try
     {
       const auto reply = get_reply();
-      m_log->error("{}:{}", __FUNCTION__, true);
+      m_log->trace("{}:{}", __FUNCTION__, true);
       return true;
     }
     catch (const std::exception& e)
@@ -158,33 +169,32 @@ public:
   }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      Decelerates an axis and brings it to a halt.
+   * \author     lokraszewski
+   * \date       03-Oct-2018
+   * \brief      Decelerates an axis and brings it to a halt.
    *
+   * \details    { detailed_item_description }
    */
   void stop(void) const { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
 
   /**
+  \author     lokraszewski
+  \date       02-Oct-2018
+  \brief      Instantly stops motorized movement.
 
-  @author     lokraszewski
-  @date       02-Oct-2018
-  @brief      Instantly stops motorized movement.
+  \details    Firmware Versions 6.06+
 
-  @details    Firmware Versions 6.06+
+  The axis ignores the deceleration setting, immediately stops driving the motion,
+  and holds the current position. Example Usage :
+  \code
+  /1 1 estop↵
+  @01 1 OK BUSY-- 0
+  \endcode
 
-              The axis ignores the deceleration setting, immediately stops
-              driving the motion, and holds the current position. Example Usage
-              :
-  @code
- /1 1 estop↵
- @01 1 OK BUSY-- 0
-  @endcode
-
-  @warning    The axis remains powered and will respond to future movement
+  \warning    The axis remains powered and will respond to future movement
               commands.
 
-  @warning    Excessive use of this command may result in potential damage to
+  \warning    Excessive use of this command may result in potential damage to
               the product and reduced lifespan. Use sparingly if axis is under
               heavy load.
   */
@@ -197,20 +207,19 @@ public:
     return 0;
   }
 
+  /**
+   * \date       03-Oct-2018
+   * \brief      Gets the reply.
+   *
+   * \return     The reply.
+   *
+   * \details    { detailed_item_description }
+   * \throw       std::runtime_error No response from device!
+   */
   Reply get_reply(void) const
   {
     const auto MAX_REPLY_LENGTH = 50;
-    /*
-     @                    A Reply
- 01                  The ID of the device sending the reply
-    0                The reply scope. 0 for the device or all axes, 1 onwards for an individual axis.
-      OK             The command succeeded.
-          IDLE       The device isn't moving, otherwise BUSY if it is moving.
-               --    No faults or warnings in the device
-                  0  The return value, typically 0.
-     */
-
-    auto response = m_port->readlines(MAX_REPLY_LENGTH, "\n");
+    auto       response         = m_port->readlines(MAX_REPLY_LENGTH, "\n");
     if (response.size() == 0)
     {
       throw std::runtime_error("No response from device!");
@@ -223,32 +232,21 @@ public:
 
     Reply reply(response[0]);
 
-    m_log->trace("address: {}", reply.address);
-    m_log->trace("scope: {}", reply.scope);
-    m_log->trace("flag: {}", reply.flag);
-    m_log->trace("status: {}", reply.status);
-    m_log->trace("warning: {}", reply.warning);
-    m_log->trace("payload: {}", reply.payload);
+    m_log->trace("Reply: {}", reply);
 
     return reply;
   }
 
   /**
-   * @author     lokraszewski
-   * @date       02-Oct-2018
-   * @brief      { function_description }
+   * \author     lokraszewski
+   * \date       02-Oct-2018
+   * \brief      { function_description }
    *
-   * @param[in]  param  The parameter
+   * \param[in]  param  The parameter
    *
-   * @return     { description_of_the_return_value }
+   * \return     { description_of_the_return_value }
    *
-   * @details
-   *
-   *
-   *
-   *
-   *
-   * { detailed_item_description }
+   * \details    { detailed_item_description }
    */
   std::string help(const std::string param = "") const
   {
@@ -266,91 +264,112 @@ public:
   }
 
   /**
-   @author     lokraszewski
-   @date       02-Oct-2018
-   @brief      Moves the axis to the home position.
+   \author     lokraszewski
+   \date       02-Oct-2018
+   \brief      Moves the axis to the home position.
 
-   @details    The axis is moved towards the home position(closest to the motor
+   \details    The axis is moved towards the home position(closest to the motor
                generally) at the lesser of the limit.approach .maxspeed and
                maxspeed settings.Once the home position is reached, the current
                position is reset to the limit.home.preset.Additionally,
                limit.home.triggered is set to 1, and the No Reference
                Position(WR) warning flag is cleared.This command is equivalent
                to tools gotolimit home neg 2 0. Example Usage :
-   @code
+   \code
    / home↵
-   \@01 0 OK BUSY WR 0
-   @endcode
-   @warning    Upon power up or setting changes, this command should be issued
+   01 0 OK BUSY WR 0
+   \endcode
+   \warning    Upon power up or setting changes, this command should be issued
                to obtain a reference position.Otherwise, motion commands may
                respond with a rejection reply or behave unexpectedly.
   */
-  void home(void) const { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
-
+  void home(void) const
+  {
+    m_port->write(fmt::format("/{} home\n", m_address));
+    const auto reply = get_reply();
+    m_log->trace("{}:{}", __FUNCTION__, reply.flag);
+  }
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      abs moves to the absolute position of value.
+   * \author     lokraszewski
+   * \date       03-Oct-2018
+   * \brief      abs moves to the absolute position of value.
    *
-   * @param[in]  value  Value must be in the range [ limit.min, limit.max ].
+   * \param[in]  value  Value must be in the range [ limit.min, limit.max ].
+   *
+   * \details    { detailed_item_description }
    */
   void move_absolute(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      rel moves the axis by value microsteps, relative to the current position.
+   * \author     lokraszewski
+   * \date       03-Oct-2018
+   * \brief      rel moves the axis by value microsteps, relative to the current
+   *             position.
    *
-   * @param[in]  value  Value must be in the range [ limit.min - pos, limit.max - pos ].
+   * \param[in]  value  Value must be in the range [ limit.min - pos, limit.max -
+   *                    pos ].
+   *
+   * \details    { detailed_item_description }
    */
   void move_relative(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      vel moves the axis at the velocity specified by value until a
+   * \author     lokraszewski
+   * \date       03-Oct-2018
+   * \brief      vel moves the axis at the velocity specified by value until a
    *             limit is reached.
    *
-   * @param[in]  value  Value must be in the range [ -resolution * 16384,
+   * \param[in]  value  Value must be in the range [ -resolution * 16384,
    *                    resolution * 16384 ].
+   *
+   * \details    { detailed_item_description }
    */
   void move_velocity(int value) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, value); }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      min moves the axis to the minimum position, as specified by limit.min.
+   * \author     lokraszewski
+   * \date       03-Oct-2018
+   * \brief      min moves the axis to the minimum position, as specified by
+   *             limit.min.
+   *
+   * \details    { detailed_item_description }
    */
   void move_min(void) { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      max moves the axis to the maximum position, as specified by limit.max.
+   * \author     lokraszewski
+   * \date       03-Oct-2018
+   * \brief      max moves the axis to the maximum position, as specified by
+   *             limit.max.
+   *
+   * \details    { detailed_item_description }
    */
   void move_max(void) { m_log->error("{}, NOT IMPLEMENTED", __FUNCTION__); }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      stored moves the axis to a previously stored position.Refer to
+   * \author     lokraszewski
+   *
+   * \date       03-Oct-2018
+   * \brief      stored moves the axis to a previously stored position.Refer to
    *             the tools storepos command for more information.
    *
-   * @param[in]  number  Number specifies the stored position number, from 1 -
+   * \param[in]  number  Number specifies the stored position number, from 1 -
    *                     16.
+   *
+   * \details    { detailed_item_description }
    */
-  void move_stored(uint8_t position) { m_log->error("{}:{}, NOT IMPLEMENTED", position, __FUNCTION__); }
+  void move_stored(uint8_t number) { m_log->error("{}:{}, NOT IMPLEMENTED", number, __FUNCTION__); }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      index moves the axis to an index position. For a provided
+   * \author     lokraszewski
+   * \date       03-Oct-2018
+   * \brief      index moves the axis to an index position. For a provided
    *             number, this command directs the axis to move to the absolute
    *             position (number - 1) * motion.index.dist.
    *
-   * @param[in]  index  Note that only positive values of number are accepted.
+   * \param[in]  index  Note that only positive values of number are accepted.
    *
-   * @details    For rotary devices with a non-zero limit.cycle.dist, the
+   * \details    For rotary devices with a non-zero limit.cycle.dist, the
    *             command will be accepted if the targeted position is greater or
    *             equal to 0 and less than limit.cycle.dist. The device will move
    *             either clockwise or counter-clockwise, depending on which
@@ -365,15 +384,16 @@ public:
   void move_index(unsigned int index) { m_log->error("{}:{}, NOT IMPLEMENTED", __FUNCTION__, index); }
 
   /**
-   * @author     lokraszewski
-   * @date       03-Oct-2018
-   * @brief      sin starts a sinusoidal motion.
+   * \author     lokraszewski
    *
-   * @param[in]  amplitude  The amplitude
-   * @param[in]  period     The period
-   * @param[in]  count      The count
+   * \date       03-Oct-2018
+   * \brief      sin starts a sinusoidal motion.
    *
-   * @details    Amplitude specifies half of the peak-to-peak amplitude of the
+   * \param[in]  amplitude  The amplitude
+   * \param[in]  period     The period
+   * \param[in]  count      The count
+   *
+   * \details    Amplitude specifies half of the peak-to-peak amplitude of the
    *             motion in units of microsteps. A positive number implies that
    *             the sinusoidal *motion starts at the minimum position and will
    *             move in a positive direction from the starting position. A
@@ -398,9 +418,7 @@ public:
    *             are determined by the amplitude and period specified in the
    *             command, as shown in the following equation. It is up to the
    *             user to ensure the maximum acceleration is low enough to
-   *             prevent the stage from slipping. v_{max} = |Amplitude|
-   *             \frac{2\pi}{Period} a_{max} = |Amplitude| \left(
-   *             \frac{2\pi}{Period} \right) ^2 Note: A sinusoidal motion has
+   *             prevent the stage from slipping. Note: A sinusoidal motion has
    *             limited ability to recover from a stalling condition. sin stop
    *             ends a sinusoidal motion when its current cycle completes.
    */
