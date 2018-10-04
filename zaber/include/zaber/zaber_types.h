@@ -1,10 +1,11 @@
 #pragma once
 
-#include <iostream>
-#include <map>
-#include <sstream>
+#include "zaber/zaber_id.h"
+#include "zaber/zaber_includes.h"
 
-#include "zaber_id.h"
+#include <iostream>
+#include <string>
+
 /*
  * @Author: Lukasz
  * @Date:   03-10-2018
@@ -87,32 +88,7 @@ enum class Warning
 
 std::ostream& operator<<(std::ostream& os, const Warning& warn);
 
-inline Warning get_warning(const std::string str)
-{
-  const std::map<std::string, Warning> m = {{"FD", Warning::DriverDisabled},
-                                            {"FQ", Warning::EncoderError},
-                                            {"FS", Warning::StalledAndStopped},
-                                            {"FT", Warning::ExcessiveTwist},
-                                            {"FB", Warning::StreamBoundsError},
-                                            {"FP", Warning::InterpolatedPathDeviation},
-                                            {"FE", Warning::LimitError},
-                                            {"WH", Warning::Devicenothomed},
-                                            {"WL", Warning::UnexpectedLimitTrigger},
-                                            {"WP", Warning::Invalidcalibrationtype},
-                                            {"WV", Warning::VoltageOutofRange},
-                                            {"WT", Warning::ControllerTemperatureHigh},
-                                            {"WM", Warning::DisplacedwhenStationary},
-                                            {"WR", Warning::NoReferencePosition},
-                                            {"NC", Warning::ManualControl},
-                                            {"NI", Warning::CommandInterrupted},
-                                            {"ND", Warning::StreamDiscontinuity},
-                                            {"NU", Warning::SettingUpdatePending},
-                                            {"NJ", Warning::JoystickCalibrating},
-                                            {"--", Warning::None}};
-
-  return m.at(str);
-}
-
+Warning get_warning(const std::string str);
 enum class ReplyFlag
 {
   OK,    //*! The command was valid and accepted by the device.
@@ -135,23 +111,7 @@ enum class ReplyFlag
 
 std::ostream& operator<<(std::ostream& os, const ReplyFlag& rf);
 
-inline ReplyFlag get_reply_flag(const std::string str)
-{
-  const std::map<std::string, ReplyFlag> m = {{"OK", ReplyFlag::OK},
-                                              {"RJ", ReplyFlag::RJ},
-                                              {"AGAIN", ReplyFlag::AGAIN},
-                                              {"BADAXIS", ReplyFlag::BADAXIS},
-                                              {"BADCOMMAND", ReplyFlag::BADCOMMAND},
-                                              {"BADDATA", ReplyFlag::BADDATA},
-                                              {"BADMESSAGEID", ReplyFlag::BADMESSAGEID},
-                                              {"DEVICEONLY", ReplyFlag::DEVICEONLY},
-                                              {"FULL", ReplyFlag::FULL},
-                                              {"LOCKSTEP", ReplyFlag::LOCKSTEP},
-                                              {"NOACCESS", ReplyFlag::NOACCESS},
-                                              {"PARKED", ReplyFlag::PARKED},
-                                              {"STATUSBUSY", ReplyFlag::STATUSBUSY}};
-  return m.at(str);
-}
+ReplyFlag get_reply_flag(const std::string str);
 
 enum class Status
 {
@@ -161,12 +121,7 @@ enum class Status
 
 std::ostream& operator<<(std::ostream& os, const Status& sts);
 
-inline Status get_status(const std::string str)
-{
-  const std::map<std::string, Status> m = {{"IDLE", Status::IDLE}, {"BUSY", Status::BUSY}};
-  return m.at(str);
-}
-
+Status get_status(const std::string str);
 enum class Command
 {
   MoveAbsolute,
@@ -181,5 +136,106 @@ enum class Command
 };
 
 std::ostream& operator<<(std::ostream& os, const Command& cmd);
+
+/*
+ * @Author: Lukasz
+ * @Date:   04-10-2018
+ * @Last Modified by:   Lukasz
+ * @Last Modified time: 04-10-2018
+ */
+
+/**
+ \author     lokraszewski
+
+ \date       03-Oct-2018
+ \brief      Reply structure.
+
+ \details    Format:
+ \code
+ * nn a fl bbbb ww x[:CC]ff
+ *
+ \endcode
+ * - @ - Message Type Length: 1 byte. This field always contains @ for a reply
+   message.
+ - nn - Device Address Length: 2 bytes. This field contains the address of the
+   device sending the reply, always formatted as two digits.
+ - a - Axis Number Length: 1 byte. This field contains the reply scope, from 0
+   to 9. 0 indicates that the following fields apply to the whole device and all
+   axes on it, otherwise the fields apply to the specific axis indicated.
+ - fl - Reply Flag Length: 2 bytes. The reply flag indicates if the message was
+   accepted or rejected and can have the following values: OK - The command was
+   valid and accepted by the device. RJ - The command was rejected. The data
+   field of the message will contain one of the following reasons: AGAIN - The
+   command cannot be processed right now. The user or application should send
+   the command again. Occurs only during streamed motion. BADAXIS - The command
+   was sent with an axis number greater than the number of axes available.
+   BADCOMMAND - The command or setting is incorrect or invalid. BADDATA - The
+   data provided in the command is incorrect or out of range. BADMESSAGEID - A
+   message ID was provided, but was not either -- or a number from 0 to 99.
+   DEVICEONLY - An axis number was specified when trying to execute a device
+   only command. FULL - The device has run out of permanent storage and cannot
+   accept the command. Occurs when storing to a stream buffer or when saving
+   commands to joystick keys. LOCKSTEP - An axis cannot be moved using normal
+   motion commands because it is part of a lockstep group. You must use lockstep
+   commands for motion or disable the lockstep group first. NOACCESS - The
+   command or setting is not available at the current access level. PARKED - The
+   device cannot move because it is currently parked. STATUSBUSY - The device
+   cannot be parked, nor can certain settings be changed, because it is
+   currently busy.
+ - bbbb - Device Status Length: 4 bytes. This field contains BUSY when the axis
+   is moving and IDLE otherwise. All movement commands, including stop, put the
+   axis into the BUSY state, while they are being executed. During streamed
+   motion, wait commands are considered to be busy, not idle. If the reply
+   message applies to the whole device, the status is BUSY if any axis is busy
+   and IDLE if all axes are idle.
+ - ww - Warning Flag Length: 2 bytes. Contains the highest priority warning
+   currently active for the device or axis, or -- under normal conditions. A
+   full description of the flags is available in the Warning Flags Section.
+ - xxx.. - Response Data Length: 1+ bytes. The response for the command
+   executed. The contents and format of this field vary depending on the
+   command, but is typically 0 (zero). CC - Message Checksum Length: 3 bytes. A
+   device will append a checksum to all replies if the comm.checksum setting is
+   configured to 1. More information and code examples are provided in the
+   Checksumming section below.
+ - ff - Message Footer Length: 2 bytes. This field always contains a CR-LF
+   combination for a reply message.
+*/
+struct Reply
+{
+public:
+  uint        address; /**! address*/
+  uint        scope;   /**! scope*/
+  ReplyFlag   flag;    /**! flag*/
+  Status      status;  /**! status*/
+  Warning     warning; /**! warning*/
+  std::string payload; /**! payload*/
+
+  Reply(void) {}
+  Reply(std::string reply);
+  ~Reply() {}
+
+  friend std::ostream& operator<<(std::ostream& os, const Reply& rp)
+  {
+    return os << fmt::format("[{}, {}, {}, {}, {}, {}]", rp.address, rp.scope, rp.flag, rp.status, rp.warning, rp.payload);
+  }
+  /**
+   * \date       04-Oct-2018
+   * \brief      Payload parser.
+   *
+   * \tparam     T     Type of payload
+   *
+   * \return     Payload as type specified
+   *
+   * \details    Used to recover values from payload.
+   */
+  template <typename T>
+  T get(void)
+  {
+    T                 ret;
+    std::stringstream ss(payload);
+    ss >> ret;
+    return ret;
+  }
+};
 
 } // namespace zaber

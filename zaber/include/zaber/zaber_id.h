@@ -8,6 +8,7 @@
 
 enum class DeviceID
 {
+  UNKNOWN = 0,
   A_BAR200BLC           = 25213,
   A_BAR200BLC_E01       = 25313,
   A_BAR200BPC           = 25223,

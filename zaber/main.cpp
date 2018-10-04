@@ -14,7 +14,6 @@
 #include <spdlog/spdlog.h>
 
 #include "zaber/zaber.h"
-#include "zaber/zaber_ascii.h"
 
 using std::cerr;
 using std::cout;
@@ -55,14 +54,23 @@ int run(int argc, char **argv)
   {
     using namespace zaber;
     Controller control(port);
-    // auto reps = control.broadcast(zaber::Command::None);
-
-    // for (auto r : reps)
-    // {
-    //   m_log->info("{}", *r);
-    // }
 
     m_log->info("{} zaber devices found. ", control.discover());
+
+    // auto linear = control.make_device(DeviceID::X_LSQ300B_E01);
+
+    /* Rotary test. */
+    {
+      auto rotary = control.make_device(DeviceID::X_RSW60A_E03);
+      rotary->home();
+      rotary->wait_until_idle();
+      rotary->move_to_location(30.0);
+      rotary->wait_until_idle();
+      rotary->move_to_location(180.0);
+      rotary->wait_until_idle();
+      rotary->move_to_location(0.0);
+      rotary->wait_until_idle();
+    }
 
     // control.broadcast<>(Command::Get, "deviceid");
 
