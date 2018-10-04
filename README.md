@@ -27,6 +27,6 @@ make
 
 
 ## Relevant Reading ##
-* [ASCII_Protocol_Manual](https://www.zaber.com/wiki/Manuals/ASCII_Protocol_Manual)
+* [ASCII Protocol Manual](https://www.zaber.com/wiki/Manuals/ASCII_Protocol_Manual)
 * [X-RSW-E Command reference](https://www.zaber.com/manuals/-RSW-E#9-quick-command-reference)
 

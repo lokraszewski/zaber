@@ -79,12 +79,14 @@ std::ostream& operator<<(std::ostream& os, const Command& cmd)
   case Command::MoveMax: os << "move max"; break;
   case Command::Home: os << "home"; break;
   case Command::Get: os << "get"; break;
+  case Command::Renumber: os << "renumber"; break;
   }
 
   return os;
 }
 
-std::shared_ptr<spdlog::logger> Device::m_log          = spdlog::stdout_color_mt("zaber");
+std::shared_ptr<spdlog::logger> Device::m_log          = spdlog::stdout_color_mt("device");
+std::shared_ptr<spdlog::logger> Controller::m_log      = spdlog::stdout_color_mt("zaber");
 size_t                          Device::m_device_count = 0;
 
 } // namespace zaber

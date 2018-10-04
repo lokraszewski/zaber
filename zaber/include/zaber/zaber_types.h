@@ -4,11 +4,12 @@
 #include <map>
 #include <sstream>
 
+#include "zaber_id.h"
 /*
  * @Author: Lukasz
  * @Date:   03-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 03-10-2018
+ * @Last Modified time: 04-10-2018
  */
 
 namespace zaber
@@ -175,14 +176,10 @@ enum class Command
   MoveMax,
   Home,
   Get,
+  Renumber,
   None,
 };
 
 std::ostream& operator<<(std::ostream& os, const Command& cmd);
-
-enum class DeviceID
-{
-  X_RSW60A_E03 = 50009,
-};
 
 } // namespace zaber

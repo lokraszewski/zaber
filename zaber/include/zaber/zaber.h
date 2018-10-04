@@ -85,8 +85,8 @@ namespace zaber
 struct Reply
 {
 public:
-  int         address; /**! address*/
-  int         scope;   /**! scope*/
+  uint        address; /**! address*/
+  uint        scope;   /**! scope*/
   ReplyFlag   flag;    /**! flag*/
   Status      status;  /**! status*/
   Warning     warning; /**! warning*/
@@ -113,6 +113,183 @@ public:
   {
     return os << fmt::format("[{}, {}, {}, {}, {}, {}]", rp.address, rp.scope, rp.flag, rp.status, rp.warning, rp.payload);
   }
+
+  /**
+   * \date       04-Oct-2018
+   * \brief      Payload parser.
+   *
+   * \tparam     T     Type of payload
+   *
+   * \return     Payload as type specified
+   *
+   * \details    Used to recover values from payload.
+   */
+  template <typename T>
+  T get(void)
+  {
+    T                 ret;
+    std::stringstream ss(payload);
+    ss >> ret;
+    return ret;
+  }
+};
+
+// Controller Class (responsible for sending/Recieving commands and stores Devies. Also has factory method for creating devices. )
+
+/**
+ * \date       04-Oct-2018
+ * \brief      Controls the chain of zaber devices.
+ *
+ * \details    { detailed_item_description }
+ */
+class Controller
+{
+public:
+  typedef uint8_t                         Address; /** Address type. */
+  typedef std::string                     Setting; /** Setting*/
+  typedef std::shared_ptr<serial::Serial> Port;    /** Serial port type. */
+
+  Controller(const Port port) : m_port(port)
+  {
+    m_log->trace("{}", __FUNCTION__);
+    if (m_port == nullptr)
+    {
+      auto err = "Serial port cannot be null!";
+      m_log->error(err);
+      throw std::invalid_argument(err);
+    }
+  }
+
+  Controller() = delete;
+  ~Controller() {}
+
+  /**
+   * \date       04-Oct-2018
+   * \brief      Broadcasts a command.
+   *
+   * \param[in]  command  The command
+   *
+   * \return     { description_of_the_return_value }
+   *
+   * \details    { detailed_item_description }
+   */
+  std::vector<std::shared_ptr<Reply>> broadcast(const Command command)
+  {
+    const auto packet = fmt::format("/{}\n", command);
+    m_log->trace("{}", packet);
+    m_port->write(packet);
+    return recieve_multiple_reply();
+  }
+
+  template <typename T>
+  std::vector<std::shared_ptr<Reply>> broadcast(const Command command, const T param)
+  {
+    const auto packet = fmt::format("/{} {}\n", command, param);
+    m_log->trace("{}", packet);
+    m_port->write(packet);
+    return recieve_multiple_reply();
+  }
+
+  std::vector<std::shared_ptr<Reply>> recieve_multiple_reply(uint max_replies = 100)
+  {
+    std::vector<std::shared_ptr<Reply>> reply;
+    reply.reserve(max_replies);
+
+    while (max_replies--)
+    {
+      auto r = recieve_reply();
+      if (r == nullptr)
+      {
+        if (reply.size() == 0)
+        {
+          const auto err = "No response from device!";
+          m_log->error("{}", err);
+          throw std::runtime_error(err);
+        }
+        else
+        {
+          break;
+        }
+      }
+      m_log->trace("{}", *r);
+      reply.push_back(r);
+    }
+    return reply;
+  }
+
+  std::shared_ptr<Reply> recieve_reply()
+  {
+
+    auto response = m_port->readline(MAX_REPLY_LENGTH, "\n");
+    if (response.size() == 0)
+    {
+      return nullptr;
+    }
+
+    if (response[0] != '@')
+    {
+      const auto err = fmt::format("Not a valid reply: [{}]", response);
+      m_log->error("{}", err);
+      return nullptr;
+    }
+
+    return std::make_shared<Reply>(response);
+  }
+
+  // void get_device_address(DeviceID id) {}
+  // void get_device(size_t address) {}
+
+  /**
+   * \date       04-Oct-2018
+   * \brief      Populates the device list.
+   *
+   * \details    Needs to be run in order to find devices in the chain.
+   */
+  uint discover(void)
+  {
+    /* Drop all previously known devies since renumber could corrupt the
+     * mapping. */
+    m_dev_map.clear();
+    /* Renumerate first so the addresses are alwasy sequentional. If no response
+     * is returned to renumber then we have no devies. */
+    try
+    {
+      (void)broadcast(Command::Renumber);
+    }
+    catch (...)
+    {
+      return 0;
+    }
+
+    const auto replies = broadcast<>(Command::Get, "deviceid");
+    for (auto r : replies)
+    {
+      auto devid       = r->get<uint>();
+      m_dev_map[devid] = r->address;
+      m_log->trace("Discovered Device ID {} at adddress {}", devid, r->address);
+    }
+
+    return device_count();
+  }
+
+  /**
+   * \date       04-Oct-2018
+   * \brief      Returns number of discovered devices on the chain.
+   *
+   * \return     Number of devices.
+   *
+   */
+  size_t device_count(void) { m_dev_map.size(); }
+
+private:
+  static constexpr auto                  MAX_REPLY_LENGTH   = 50;
+  static constexpr auto                  MAX_COMMAND_LENGTH = 50;
+  static std::shared_ptr<spdlog::logger> m_log;
+
+  std::map<uint, uint> m_dev_map; // Map of address per device ID.
+
+protected:
+  const Port m_port;
 };
 
 class Device
@@ -145,7 +322,7 @@ public:
   bool is_busy(void) const
   {
     const auto reply = send_command(Command::None);
-    return reply.status == Status::BUSY;
+    return reply->status == Status::BUSY;
   }
 
   bool is_connected(void)
@@ -214,7 +391,7 @@ public:
   //   m_port->write(command);
   // }
   template <typename T>
-  Reply send_command(const Command command, const T param) const
+  std::shared_ptr<Reply> send_command(const Command command, const T param) const
   {
     const auto packet = fmt::format("/{} {} {}\n", m_address, command, param);
     m_log->trace("Command: [{},{}, {}]", m_address, command, param);
@@ -222,7 +399,7 @@ public:
     return get_reply();
   }
 
-  Reply send_command(const Command command) const
+  std::shared_ptr<Reply> send_command(const Command command) const
   {
     const auto packet = fmt::format("/{} {}\n", m_address, command);
     m_log->trace("Command: [{},{}]", m_address, command);
@@ -230,21 +407,73 @@ public:
     return get_reply();
   }
 
+  static std::shared_ptr<Reply> recieve_reply(const Port port)
+  {
+
+    auto response = port->readline(MAX_REPLY_LENGTH, "\n");
+    if (response.size() == 0)
+    {
+      return nullptr;
+    }
+
+    if (response[0] != '@')
+    {
+      const auto err = fmt::format("Not a valid reply: [{}]", response);
+      m_log->error("{}", err);
+      return nullptr;
+    }
+
+    return std::make_shared<Reply>(response);
+  }
+
+  static std::vector<std::shared_ptr<Reply>> recieve_multiple_reply(const Port port, uint max_replies = 100)
+  {
+    std::vector<std::shared_ptr<Reply>> reply;
+    reply.reserve(max_replies);
+
+    while (max_replies--)
+    {
+      auto r = recieve_reply(port);
+      if (r == nullptr)
+      {
+        if (reply.size() == 0)
+        {
+          const auto err = "No response from device!";
+          m_log->error("{}", err);
+          throw std::runtime_error(err);
+        }
+        else
+        {
+          break;
+        }
+      }
+      m_log->trace("{}", *r);
+      reply.push_back(r);
+    }
+    return reply;
+  }
+
+  static std::vector<std::shared_ptr<Reply>> send_broadcast(const Port port, const Command command)
+  {
+    const auto packet = fmt::format("/{}\n", command);
+    port->write(packet);
+    return recieve_multiple_reply(port);
+  }
+
   // std::vector<Reply> send_broadcast(const Command command) const {}
 
   /**
    * \date       03-Oct-2018
-   * \brief      Gets the reply.
+   * \brief      Gets single line reply. Ignores comment lines.
    *
    * \return     The reply.
    *
    * \details    { detailed_item_description }
-   * \throw       std::runtime_error No response from device!
+   * \throws     std::runtime_error  No response from device!
    */
-  Reply get_reply(void) const
+  std::shared_ptr<Reply> get_reply(void) const
   {
-    const auto MAX_REPLY_LENGTH = 50;
-    auto       response         = m_port->readlines(MAX_REPLY_LENGTH, "\n");
+    auto response = m_port->readline(MAX_REPLY_LENGTH, "\n");
 
     // If we dont get a response then log and throw since this function must
     // return reply.
@@ -252,15 +481,20 @@ public:
     {
       const auto err = "No response from device!";
       m_log->trace("{}", err);
-      throw std::runtime_error(err);
+      return nullptr;
+    }
+
+    if (response[0] != '@')
+    {
+      const auto err = fmt::format("Not a valid reply: [{}]", response);
+      m_log->warn("{}", err);
+      return nullptr;
     }
 
     // Parse the response with reply constructor.
-    Reply reply(response[0]);
-
-    m_log->trace("Reply: {}", reply);
-
-    return reply;
+    auto r = std::make_shared<Reply>(response);
+    m_log->trace("Reply: {}", *r);
+    return r;
   }
 
   /**
@@ -438,7 +672,7 @@ public:
   uint get_device_id(void)
   {
     const auto        reply = send_command<>(Command::Get, "deviceid");
-    std::stringstream ss(reply.payload);
+    std::stringstream ss(reply->payload);
     uint              id;
     ss >> id;
     return id;
@@ -447,7 +681,7 @@ public:
   int get_position(void)
   {
     const auto        reply = send_command<>(Command::Get, "pos");
-    std::stringstream ss(reply.payload);
+    std::stringstream ss(reply->payload);
     int               pos;
     ss >> pos;
     return pos;
@@ -456,6 +690,7 @@ public:
   static size_t device_count(void) { return m_device_count; }
 
 private:
+  static constexpr auto                  MAX_REPLY_LENGTH = 50;
   static size_t                          m_device_count;
   static std::shared_ptr<spdlog::logger> m_log;
 

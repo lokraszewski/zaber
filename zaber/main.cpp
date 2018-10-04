@@ -53,17 +53,29 @@ int run(int argc, char **argv)
   m_log->info("Port {} open.", port->isOpen() ? "" : "not");
 
   {
-    zaber::Device stage(port);
-    m_log->info("is_connected : {}", stage.is_connected());
-    m_log->info("ID: {}", stage.get_device_id());
+    using namespace zaber;
+    Controller control(port);
+    // auto reps = control.broadcast(zaber::Command::None);
 
-    stage.home();
-    m_log->info("is_busy : {}", stage.is_busy());
+    // for (auto r : reps)
+    // {
+    //   m_log->info("{}", *r);
+    // }
 
-    while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
-    ;
+    m_log->info("{} zaber devices found. ", control.discover());
 
-    m_log->info("Position : {}", stage.get_position());
+    // control.broadcast<>(Command::Get, "deviceid");
+
+    // m_log->info("is_connected : {}", stage.is_connected());
+    // m_log->info("ID: {}", stage.get_device_id());
+
+    // stage.home();
+    // m_log->info("is_busy : {}", stage.is_busy());
+
+    // while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
+    // ;
+
+    // m_log->info("Position : {}", stage.get_position());
 
     // stage.move_min();
     // while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
