@@ -11,7 +11,7 @@ option(TESTS_ENABLED "Enable automatic tests" OFF)
 # Enable/disable test coverage
 option(COVERAGE_ENABLED "Enable test coverage" OFF)
 # Turn on verbose makefile.
-set(CMAKE_VERBOSE_MAKEFILE ON)
+# set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")

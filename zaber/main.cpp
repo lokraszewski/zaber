@@ -56,55 +56,33 @@ int run(int argc, char **argv)
     Controller control(port);
 
     m_log->info("{} zaber devices found. ", control.discover());
-
-    // auto linear = control.make_device(DeviceID::X_LSQ300B_E01);
+    // m_log->info("limit cycle dist: {}", *control.command<>(1, Command::Get, "limit.cycle.dist"));
 
     /* Rotary test. */
     {
       auto rotary = control.make_device(DeviceID::X_RSW60A_E03);
       rotary->home();
-      rotary->wait_until_idle();
-      rotary->move_to_location(30.0);
-      rotary->wait_until_idle();
-      rotary->move_to_location(180.0);
-      rotary->wait_until_idle();
-      rotary->move_to_location(0.0);
-      rotary->wait_until_idle();
+      m_log->info("limit.cycle.dist: {}", *rotary->command<>(Command::Get, "limit.cycle.dist"));
+      m_log->info("limit.cycle.dist: {}", rotary->get_setting<uint>("limit.cycle.dist"));
+      // rotary->setup();
+      // rotary->wait_until_idle();
+      // rotary->move_to_location(30.0);
+      // rotary->wait_until_idle();
+      // rotary->move_to_location(180.0);
+      // rotary->wait_until_idle();
+      // rotary->move_to_location(0.0);
+      // rotary->wait_until_idle();
+    } /* Linear test. */
+    {
+      auto linear = control.make_device(DeviceID::X_LSQ300B_E01);
+      // linear->setup();
+      linear->home();
+      // linear->wait_until_idle();
+      // linear->move_to_location(30e-3); /*30mm*/
+      // linear->wait_until_idle();
+      // linear->move_to_location(0.0);
+      // linear->wait_until_idle();
     }
-
-    // control.broadcast<>(Command::Get, "deviceid");
-
-    // m_log->info("is_connected : {}", stage.is_connected());
-    // m_log->info("ID: {}", stage.get_device_id());
-
-    // stage.home();
-    // m_log->info("is_busy : {}", stage.is_busy());
-
-    // while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
-    // ;
-
-    // m_log->info("Position : {}", stage.get_position());
-
-    // stage.move_min();
-    // while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
-    // ;
-    // m_log->info("Position : {}", stage.get_position());
-
-    // stage.move_max();
-    // while (stage.is_busy()) m_log->info("Position : {}", stage.get_position());
-    // ;
-    // m_log->info("Position : {}", stage.get_position());
-
-    // m_log->info("Stage at home", stage.is_busy());
-
-    // stage.emergency_stop();
-    // stage.help("home");
-    // stage.home();
-    // stage.get<int>("some_param_nameake");
-    // stage.move_absolute(10);
-    // stage.move_relative(10);
-    // stage.move_min();
-    // stage.move_max();
   }
 
   return 0;

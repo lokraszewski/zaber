@@ -3,16 +3,17 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 04-10-2018
+ * @Last Modified time: 05-10-2018
  */
 
+#include "zaber/zaber_control.h"
 #include "zaber/zaber_includes.h"
 #include "zaber/zaber_types.h"
 
 namespace zaber
 {
 
-class Controller;
+// class Controller;
 
 class Device
 {
@@ -197,7 +198,20 @@ public:
   int                    get_position(void);
   std::shared_ptr<Reply> command(const Command cmd) const;
 
+  template <typename T>
+  std::shared_ptr<Reply> command(const Command cmd, const T param) const
+  {
+    return m_ctrl->command<T>(m_address, cmd, param);
+  }
+
+  template <typename T>
+  T get_setting(const std::string setting)
+  {
+    return (command<std::string>(Command::Get, setting))->get<T>();
+  }
+
   virtual void move_to_location(const double real_location) {}
+  virtual void setup(void) {}
 
 private:
 protected:

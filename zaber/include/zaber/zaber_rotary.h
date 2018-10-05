@@ -19,5 +19,9 @@ public:
   virtual ~Rotary();
 
   virtual void move_to_location(const double real_location) override;
+  virtual void setup(void) override;
+
+private:
+  size_t m_limit_cycle_dist;
 };
 } // namespace zaber

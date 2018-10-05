@@ -36,12 +36,20 @@ public:
   }
 
   template <typename T>
-  std::vector<std::shared_ptr<Reply>> command(const Command command, const T param)
+  std::shared_ptr<Reply> command(const uint address, const Command command, const T param)
   {
-    const auto packet = fmt::format("/{} {}\n", command, param);
+    const auto packet = fmt::format("/{} {} {}\n", address, command, param);
     m_log->trace("{}", packet);
     m_port->write(packet);
-    return recieve_multiple_reply();
+    auto r = recieve_reply();
+    if (r == nullptr)
+    {
+      const auto err = "No response from device!";
+      m_log->error("{}", err);
+      throw std::runtime_error(err);
+    }
+
+    return r;
   }
 
   /**

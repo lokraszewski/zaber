@@ -12,7 +12,7 @@ namespace zaber
 
 std::shared_ptr<spdlog::logger> Device::m_log = spdlog::stdout_color_mt("device");
 
-Device::Device(Controller* const ctrl, const Address address, const DeviceID id) : m_address(address), m_ctrl(ctrl), m_id(id)
+Device::Device(Controller* const ctrl, const Address address, const DeviceID id) : m_ctrl(ctrl), m_address(address), m_id(id)
 {
 
   m_log->trace("{} id = {}, at {}", __FUNCTION__, static_cast<uint>(m_id), m_address);
@@ -57,4 +57,11 @@ void Device::wait_until_idle(void) const
 void Device::home(void) const { (void)command(Command::Home); }
 
 std::shared_ptr<Reply> Device::command(const Command cmd) const { return m_ctrl->command(m_address, cmd); }
+
+// template <typename T>
+// std::shared_ptr<Reply> Device::test(const Command cmd, const T param) const
+// {
+//   return m_ctrl->command<T>(m_address, cmd, param);
+// }
+
 } // namespace zaber

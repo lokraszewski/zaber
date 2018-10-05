@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 04-10-2018
+ * @Last Modified time: 05-10-2018
  */
 
 #include "zaber/zaber_control.h"
@@ -30,10 +30,7 @@ Controller::~Controller() {}
 std::unique_ptr<Device> Controller::make_device(const DeviceID id)
 {
   const auto dev_addr = m_dev_map.at(static_cast<uint>(id));
-  // const auto err = fmt::format("Device ID {} not found.", static_cast<uint>(id));
-  // m_log->error(err);
-  // throw std::runtime_error(err);
-  //
+
   m_log->trace("{} id = {}, at {}", __FUNCTION__, static_cast<uint>(id), dev_addr);
 
   switch (id)
