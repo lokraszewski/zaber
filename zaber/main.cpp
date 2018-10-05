@@ -32,7 +32,7 @@ int run(int argc, char **argv)
     options.add_options()("h,help", "Show help.");
     options.add_options()("d,debug", "Debug level output.", cxxopts::value<int>()->default_value("2"));
     options.add_options()("p,port", "Serial port path.", cxxopts::value<std::string>()->default_value("/dev/ttyUSB0"));
-    options.add_options()("t,timeout", "Timeout level (ms)", cxxopts::value<int>()->default_value("10"));
+    options.add_options()("t,timeout", "Timeout level (ms)", cxxopts::value<int>()->default_value("100"));
   }
 
   auto result = options.parse(argc, argv);
@@ -56,24 +56,24 @@ int run(int argc, char **argv)
     Controller control(port);
 
     m_log->info("{} zaber devices found. ", control.discover());
-    // m_log->info("limit cycle dist: {}", *control.command<>(1, Command::Get, "limit.cycle.dist"));
 
-    /* Rotary test. */
     {
+      /* Rotary test. */
       auto rotary = control.make_device(DeviceID::X_RSW60A_E03);
       rotary->home();
-      m_log->info("limit.cycle.dist: {}", *rotary->command<>(Command::Get, "limit.cycle.dist"));
-      m_log->info("limit.cycle.dist: {}", rotary->get_setting<uint>("limit.cycle.dist"));
-      // rotary->setup();
-      // rotary->wait_until_idle();
-      // rotary->move_to_location(30.0);
-      // rotary->wait_until_idle();
-      // rotary->move_to_location(180.0);
-      // rotary->wait_until_idle();
-      // rotary->move_to_location(0.0);
-      // rotary->wait_until_idle();
-    } /* Linear test. */
+      rotary->wait_until_idle();
+      rotary->move_to_location(30.0);
+      rotary->wait_until_idle();
+      rotary->move_to_location(180.0);
+      rotary->wait_until_idle();
+      rotary->move_to_location(120.0);
+      rotary->wait_until_idle();
+      rotary->move_to_location(0.0);
+      rotary->wait_until_idle();
+      rotary->home();
+    }
     {
+      /* Linear test. */
       auto linear = control.make_device(DeviceID::X_LSQ300B_E01);
       // linear->setup();
       linear->home();

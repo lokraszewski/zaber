@@ -65,16 +65,7 @@ public:
   void emergency_stop(void) const;
 
   void home(void) const;
-  /**
-   * \author     lokraszewski
-   * \date       03-Oct-2018
-   * \brief      abs moves to the absolute position of value.
-   *
-   * \param[in]  value  Value must be in the range [ limit.min, limit.max ].
-   *
-   * \details    { detailed_item_description }
-   */
-  void move_absolute(int value);
+  void move_absolute(const int value);
   /**
    * \author     lokraszewski
    * \date       03-Oct-2018

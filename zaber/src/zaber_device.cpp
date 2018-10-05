@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 04-10-2018
+ * @Last Modified time: 05-10-2018
  */
 
 #include "zaber/zaber_device.h"
@@ -55,6 +55,17 @@ void Device::wait_until_idle(void) const
              respond with a rejection reply or behave unexpectedly.
 */
 void Device::home(void) const { (void)command(Command::Home); }
+
+/**
+ * \author     lokraszewski
+ * \date       03-Oct-2018
+ * \brief      abs moves to the absolute position of value.
+ *
+ * \param[in]  value  Value must be in the range [ limit.min, limit.max ].
+ *
+ * \details    { detailed_item_description }
+ */
+void Device::move_absolute(const int value) { (void)command<>(Command::MoveAbsolute, value); }
 
 std::shared_ptr<Reply> Device::command(const Command cmd) const { return m_ctrl->command(m_address, cmd); }
 
