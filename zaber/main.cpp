@@ -62,7 +62,7 @@ int run(int argc, char **argv)
 #if TEST_ROTARY
     {
       /* Rotary test. */
-      auto rotary = control.make_device(DeviceID::X_RSW60A_E03);
+      auto rotary = control.make_device_from_id(DeviceID::X_RSW60A_E03);
       rotary->home();
       rotary->wait_until_idle();
       rotary->move_to_location(30.0);
@@ -79,7 +79,7 @@ int run(int argc, char **argv)
 #if TEST_LINEAR
     {
       /* Linear test. */
-      auto linear = control.make_device(DeviceID::X_LSQ300B_E01);
+      auto linear = control.make_device_from_id(DeviceID::X_LSQ300B_E01);
       linear->home();
       linear->wait_until_idle();
       linear->move_to_location(150e-3); /*150mm*/
@@ -87,6 +87,14 @@ int run(int argc, char **argv)
       linear->move_to_location(300e-3); /*150mm*/
       linear->wait_until_idle();
       linear->move_to_location(0); /*150mm*/
+      linear->wait_until_idle();
+    }
+
+    {
+      auto linear = control.make_device_from_address(2);
+      linear->home();
+      linear->wait_until_idle();
+      linear->move_to_location(150e-3); /*150mm*/
       linear->wait_until_idle();
     }
 #endif

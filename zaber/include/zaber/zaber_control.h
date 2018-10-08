@@ -153,9 +153,7 @@ public:
     const auto replies = broadcast<>(Command::Get, "deviceid");
     for (auto r : replies)
     {
-      auto devid       = r->get<uint>();
-      m_dev_map[devid] = r->address;
-      m_log->trace("Discovered Device ID {} at adddress {}", devid, r->address);
+      m_dev_map[r->address] = r->get<uint>();
     }
 
     return device_count();
@@ -170,14 +168,16 @@ public:
    */
   size_t device_count(void) { return m_dev_map.size(); }
 
-  std::unique_ptr<Device> make_device(const DeviceID id);
+  std::unique_ptr<Device> make_device(const DeviceID id, const Address addr);
+  std::unique_ptr<Device> make_device_from_address(const Address addr);
+  std::unique_ptr<Device> make_device_from_id(const DeviceID id);
 
 private:
   static constexpr auto                  MAX_REPLY_LENGTH   = 50;
   static constexpr auto                  MAX_COMMAND_LENGTH = 50;
   static std::shared_ptr<spdlog::logger> m_log;
 
-  std::map<uint, uint> m_dev_map; // Map of address per device ID.
+  std::map<uint, uint> m_dev_map; /* map of address to device type. */
 
 protected:
   const Port m_port;

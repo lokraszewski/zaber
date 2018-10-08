@@ -28,23 +28,70 @@ Controller::Controller(const Port port) : m_port(port)
 
 Controller::~Controller() {}
 
-std::unique_ptr<Device> Controller::make_device(const DeviceID id)
+std::unique_ptr<Device> Controller::make_device(const DeviceID id, const Address addr)
 {
-  const auto dev_addr = m_dev_map.at(static_cast<uint>(id));
-
-  m_log->trace("{} id = {}, at {}", __FUNCTION__, static_cast<uint>(id), dev_addr);
+  m_log->trace("{} id = {}, at {}", __FUNCTION__, static_cast<uint>(id), addr);
 
   switch (id)
   {
   case DeviceID::X_LSQ300B_E01:
     m_log->trace("Creating linear device ({})", static_cast<uint>(id));
-    return std::make_unique<Linear>(this, dev_addr, id);
+    return std::make_unique<Linear>(this, addr, id);
   case DeviceID::X_RSW60A_E03:
     m_log->trace("Creating rotary device ({})", static_cast<uint>(id));
-    return std::make_unique<Rotary>(this, dev_addr, id);
+    return std::make_unique<Rotary>(this, addr, id);
   default:
     m_log->warn("Unknown device id ({}), creating defeault device.", static_cast<uint>(id));
-    return std::make_unique<Device>(this, dev_addr, id);
+    return std::make_unique<Device>(this, addr, id);
   }
 }
+
+std::unique_ptr<Device> Controller::make_device_from_address(const Address addr)
+{
+  const auto id = m_dev_map.at(static_cast<uint>(addr));
+  return make_device(static_cast<DeviceID>(id), addr);
+}
+
+std::unique_ptr<Device> Controller::make_device_from_id(const DeviceID id)
+{
+  for (auto &device : m_dev_map)
+  {
+    if (device.second == static_cast<uint>(id))
+    {
+      return make_device(id, static_cast<Address>(device.first));
+    }
+  }
+
+  // Maybe throw here since we would expect a device  to be found
+  return nullptr;
+}
+
+// std::unique_ptr<Device> Controller::make_device(const DeviceID id)
+// {
+//   const auto dev_addr = m_dev_map.at(static_cast<uint>(id));
+//   return make_device(id, dev_addr);
+// }
+
+// std::unique_ptr<Device> make_device(const DeviceID id, const Address addr)
+// {
+
+// }
+
+// std::unique_ptr<Device> make_device_by_address(const Address addr)
+// {
+
+// }
+
+// DeviceID get_device_id(const Address addr)
+// {
+
+// }
+
+// std::unique_ptr<Device> Controller::make_device_from_address(const Address id)
+// {
+
+//   int key = 0;
+
+//   std::cout << key << std::endl;
+// }
 } // namespace zaber
