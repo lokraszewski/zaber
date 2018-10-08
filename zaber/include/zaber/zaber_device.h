@@ -13,7 +13,7 @@
 namespace zaber
 {
 
-// class Controller;
+double get_range(const DeviceID id);
 
 class Device
 {

@@ -24,6 +24,9 @@ using std::vector;
 
 static auto m_log = spdlog::stdout_color_mt("app");
 
+#define TEST_ROTARY 0
+#define TEST_LINEAR 1
+
 int run(int argc, char **argv)
 {
 
@@ -56,7 +59,7 @@ int run(int argc, char **argv)
     Controller control(port);
 
     m_log->info("{} zaber devices found. ", control.discover());
-
+#if TEST_ROTARY
     {
       /* Rotary test. */
       auto rotary = control.make_device(DeviceID::X_RSW60A_E03);
@@ -72,17 +75,21 @@ int run(int argc, char **argv)
       rotary->wait_until_idle();
       rotary->home();
     }
+#endif
+#if TEST_LINEAR
     {
       /* Linear test. */
       auto linear = control.make_device(DeviceID::X_LSQ300B_E01);
-      // linear->setup();
       linear->home();
-      // linear->wait_until_idle();
-      // linear->move_to_location(30e-3); /*30mm*/
-      // linear->wait_until_idle();
-      // linear->move_to_location(0.0);
-      // linear->wait_until_idle();
+      linear->wait_until_idle();
+      linear->move_to_location(150e-3); /*150mm*/
+      linear->wait_until_idle();
+      linear->move_to_location(300e-3); /*150mm*/
+      linear->wait_until_idle();
+      linear->move_to_location(0); /*150mm*/
+      linear->wait_until_idle();
     }
+#endif
   }
 
   return 0;

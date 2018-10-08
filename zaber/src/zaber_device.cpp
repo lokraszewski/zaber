@@ -2,13 +2,22 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 05-10-2018
+ * @Last Modified time: 08-10-2018
  */
 
 #include "zaber/zaber_device.h"
 #include "zaber/zaber_control.h"
 namespace zaber
 {
+
+double get_range(const DeviceID id)
+{
+  switch (id)
+  {
+  case DeviceID::X_LSQ300B_E01: return 300e-3;
+  default: return 0e0;
+  }
+}
 
 std::shared_ptr<spdlog::logger> Device::m_log = spdlog::stdout_color_mt("device");
 

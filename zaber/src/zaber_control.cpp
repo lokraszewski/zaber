@@ -2,11 +2,12 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 05-10-2018
+ * @Last Modified time: 08-10-2018
  */
 
 #include "zaber/zaber_control.h"
 #include "zaber/zaber_device.h"
+#include "zaber/zaber_linear.h"
 #include "zaber/zaber_rotary.h"
 
 namespace zaber
@@ -35,6 +36,9 @@ std::unique_ptr<Device> Controller::make_device(const DeviceID id)
 
   switch (id)
   {
+  case DeviceID::X_LSQ300B_E01:
+    m_log->trace("Creating linear device ({})", static_cast<uint>(id));
+    return std::make_unique<Linear>(this, dev_addr, id);
   case DeviceID::X_RSW60A_E03:
     m_log->trace("Creating rotary device ({})", static_cast<uint>(id));
     return std::make_unique<Rotary>(this, dev_addr, id);

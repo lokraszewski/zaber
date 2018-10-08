@@ -6,6 +6,7 @@ add_library(${TARGET_LIB_NAME}
   src/zaber_device.cpp
   src/zaber_types.cpp
   src/zaber_rotary.cpp
+  src/zaber_linear.cpp
  )
 
 target_include_directories(${TARGET_LIB_NAME} PUBLIC
