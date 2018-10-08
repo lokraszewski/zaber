@@ -82,6 +82,7 @@ public:
   std::vector<std::shared_ptr<Reply>> recieve_multiple_reply(uint max_replies = 100)
   {
     std::vector<std::shared_ptr<Reply>> reply;
+
     reply.reserve(max_replies);
 
     while (max_replies--)
@@ -124,9 +125,6 @@ public:
 
     return std::make_shared<Reply>(response);
   }
-
-  // void get_device_address(DeviceID id) {}
-  // void get_device(size_t address) {}
 
   /**
    * \date       04-Oct-2018

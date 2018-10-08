@@ -7,7 +7,7 @@ set(PROJECT_BRIEF "\"Driver for the zaber motion control modules. \"")
 
 
 # Enable/disable testing
-option(TESTS_ENABLED "Enable automatic tests" OFF)
+option(TESTS_ENABLED "Enable automatic tests" ON)
 # Enable/disable test coverage
 option(COVERAGE_ENABLED "Enable test coverage" OFF)
 # Turn on verbose makefile.

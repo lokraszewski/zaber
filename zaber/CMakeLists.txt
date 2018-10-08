@@ -1,5 +1,5 @@
 
-set(TARGET_LIB_NAME ${CMAKE_PROJECT_NAME}_lib)
+set(TARGET_LIB_NAME ${CMAKE_PROJECT_NAME})
 
 add_library(${TARGET_LIB_NAME}
   src/zaber_control.cpp
@@ -28,9 +28,7 @@ add_executable(${CMAKE_PROJECT_NAME}_app  ${APP_SRC})
 target_link_libraries(${CMAKE_PROJECT_NAME}_app ${TARGET_LIB_NAME})
 
 
+message(STATUS "Testing : ${TESTS_ENABLED}")
 if(TESTS_ENABLED)
-  message(STATUS "Testing enabled.")
   add_subdirectory(test)
-else()
-  message(STATUS "Testing disabled.")
 endif()

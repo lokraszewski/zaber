@@ -66,32 +66,4 @@ std::unique_ptr<Device> Controller::make_device_from_id(const DeviceID id)
   return nullptr;
 }
 
-// std::unique_ptr<Device> Controller::make_device(const DeviceID id)
-// {
-//   const auto dev_addr = m_dev_map.at(static_cast<uint>(id));
-//   return make_device(id, dev_addr);
-// }
-
-// std::unique_ptr<Device> make_device(const DeviceID id, const Address addr)
-// {
-
-// }
-
-// std::unique_ptr<Device> make_device_by_address(const Address addr)
-// {
-
-// }
-
-// DeviceID get_device_id(const Address addr)
-// {
-
-// }
-
-// std::unique_ptr<Device> Controller::make_device_from_address(const Address id)
-// {
-
-//   int key = 0;
-
-//   std::cout << key << std::endl;
-// }
 } // namespace zaber
