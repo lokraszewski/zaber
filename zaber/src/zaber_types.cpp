@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 04-10-2018
+ * @Last Modified time: 09-10-2018
  */
 
 #include "zaber/zaber_types.h"
@@ -82,10 +82,16 @@ std::ostream& operator<<(std::ostream& os, const Command& cmd)
 
   switch (cmd)
   {
+  case Command::StorePosition: os << "tools storepos"; break;
+  case Command::SystemRestore: os << "system restore"; break;
+  case Command::SystemReset: os << "system reset"; break;
+  case Command::EmergencyStop: os << "estop"; break;
+  case Command::Stop: os << "stop"; break;
   case Command::None: os << ""; break;
   case Command::MoveAbsolute: os << "move abs"; break;
   case Command::MoveRelative: os << "move rel"; break;
   case Command::MoveVelocity: os << "move vel"; break;
+  case Command::MoveStored: os << "move stored"; break;
   case Command::MoveMin: os << "move min"; break;
   case Command::MoveMax: os << "move max"; break;
   case Command::Home: os << "home"; break;
@@ -95,11 +101,6 @@ std::ostream& operator<<(std::ostream& os, const Command& cmd)
 
   return os;
 }
-
-// std::ostream& Reply::operator<<(std::ostream& os, const Reply& rp)
-// {
-//   return os << fmt::format("[{}, {}, {}, {}, {}, {}]", rp.address, rp.scope, rp.flag, rp.status, rp.warning, rp.payload);
-// }
 
 Warning get_warning(const std::string str)
 {

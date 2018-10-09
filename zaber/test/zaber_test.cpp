@@ -8,6 +8,17 @@
 #include "spdlog/spdlog.h"
 #include <catch.hpp>
 
-static auto m_log = spdlog::stdout_color_mt("unit_test");
+#include "zaber/zaber.h"
 
-TEST_CASE("Test1") {}
+static auto m_log = spdlog::stdout_color_mt("unit_test");
+using namespace zaber;
+
+TEST_CASE("Disconnected, no devices found.")
+{
+
+  m_log->info("{}", Controller::make_arg_string("foo"));
+  m_log->info("{}", Controller::make_arg_string("foo", "bar"));
+  m_log->info("{}", Controller::make_arg_string(42));
+  m_log->info("{}", Controller::make_arg_string(42, 3, 5));
+  m_log->info("{}", Controller::make_arg_string(42, 3, 5, "foo"));
+}

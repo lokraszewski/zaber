@@ -2,13 +2,7 @@
  * @Author: Lukasz
  * @Date:   08-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 08-10-2018
- */
-/*
- * @Author: Lukasz
- * @Date:   04-10-2018
- * @Last Modified by:   Lukasz
- * @Last Modified time: 04-10-2018
+ * @Last Modified time: 09-10-2018
  */
 #pragma once
 #include "zaber/zaber_device.h"

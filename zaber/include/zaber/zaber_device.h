@@ -3,7 +3,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 05-10-2018
+ * @Last Modified time: 09-10-2018
  */
 
 #include "zaber/zaber_control.h"
@@ -32,39 +32,12 @@ public:
   void                    wait_until_idle(void) const;
 
   bool is_connected(void);
-  /**
-   * \author     lokraszewski
-   * \date       03-Oct-2018
-   * \brief      Decelerates an axis and brings it to a halt.
-   *
-   * \details    { detailed_item_description }
-   */
   void stop(void) const;
-
-  /**
-  \author     lokraszewski
-  \date       02-Oct-2018
-  \brief      Instantly stops motorized movement.
-
-  \details    Firmware Versions 6.06+
-
-  The axis ignores the deceleration setting, immediately stops driving the motion,
-  and holds the current position. Example Usage :
-  \code
-  /1 1 estop↵
-  @01 1 OK BUSY-- 0
-  \endcode
-
-  \warning    The axis remains powered and will respond to future movement
-              commands.
-
-  \warning    Excessive use of this command may result in potential damage to
-              the product and reduced lifespan. Use sparingly if axis is under
-              heavy load.
-  */
   void emergency_stop(void) const;
-
   void home(void) const;
+  void reset(void) const;
+  void restore_defaults(void) const;
+
   void move_absolute(const int value);
   /**
    * \author     lokraszewski
@@ -108,6 +81,10 @@ public:
    * \details    { detailed_item_description }
    */
   void move_max(void);
+
+  void store_position(const uint8_t number, const size_t pos) const;
+  void store_position(const uint8_t number) const;
+
   /**
    * \author     lokraszewski
    *
@@ -120,7 +97,7 @@ public:
    *
    * \details    { detailed_item_description }
    */
-  void move_stored(uint8_t number);
+  void move_stored(const uint8_t number) const;
 
   /**
    * \author     lokraszewski

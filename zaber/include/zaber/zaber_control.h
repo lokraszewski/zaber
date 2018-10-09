@@ -18,6 +18,18 @@ public:
   Controller() = delete;
   ~Controller();
 
+  template <typename T>
+  static std::string make_arg_string(T first)
+  {
+    return fmt::format(" {}", first);
+  }
+
+  template <typename T, typename... Args>
+  static std::string make_arg_string(T first, Args... args)
+  {
+    return fmt::format("{}{}", make_arg_string(first), make_arg_string(args...));
+  }
+
   std::shared_ptr<Reply> command(const uint address, const Command command)
   {
     const auto packet = fmt::format("/{} {}\n", address, command);
@@ -39,6 +51,23 @@ public:
   std::shared_ptr<Reply> command(const uint address, const Command command, const T param)
   {
     const auto packet = fmt::format("/{} {} {}\n", address, command, param);
+    m_log->trace("{}", packet);
+    m_port->write(packet);
+    auto r = recieve_reply();
+    if (r == nullptr)
+    {
+      const auto err = "No response from device!";
+      m_log->error("{}", err);
+      throw std::runtime_error(err);
+    }
+
+    return r;
+  }
+
+  template <typename T, typename... Args>
+  std::shared_ptr<Reply> command(const uint address, const Command command, T first, Args... args)
+  {
+    const auto packet = fmt::format("/{} {} {}\n", address, command, make_arg_string(first, args...));
     m_log->trace("{}", packet);
     m_port->write(packet);
     auto r = recieve_reply();

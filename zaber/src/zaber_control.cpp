@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 08-10-2018
+ * @Last Modified time: 09-10-2018
  */
 
 #include "zaber/zaber_control.h"
@@ -62,8 +62,11 @@ std::unique_ptr<Device> Controller::make_device_from_id(const DeviceID id)
     }
   }
 
-  // Maybe throw here since we would expect a device  to be found
-  return nullptr;
+  {
+    auto err = "Device not found!";
+    m_log->error(err);
+    throw std::runtime_error(err);
+  }
 }
 
 } // namespace zaber

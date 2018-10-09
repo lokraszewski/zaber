@@ -10,7 +10,7 @@
  * @Author: Lukasz
  * @Date:   03-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 04-10-2018
+ * @Last Modified time: 09-10-2018
  */
 
 namespace zaber
@@ -124,9 +124,15 @@ std::ostream& operator<<(std::ostream& os, const Status& sts);
 Status get_status(const std::string str);
 enum class Command
 {
+  StorePosition,
+  SystemRestore,
+  SystemReset,
+  EmergencyStop,
+  Stop,
   MoveAbsolute,
   MoveRelative,
   MoveVelocity,
+  MoveStored,
   MoveMin,
   MoveMax,
   Home,
