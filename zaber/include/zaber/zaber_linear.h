@@ -16,7 +16,7 @@ public:
   Linear() = delete;
   virtual ~Linear();
 
-  virtual void   move_to_location(const double real_location) override;
+  virtual void   move_to_real(const double real_location) override;
   virtual double pos_to_real(const int pos) const override;
   virtual int    real_to_pos(const double real) const override;
   void           set_range(const double range) { m_range = range; }

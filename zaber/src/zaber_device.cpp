@@ -765,6 +765,10 @@ int      Device::get_max_velocity(void) const
   return 16384 * res;
 }
 
+uint Device::get_velocity(void) const { return get_setting<uint>("maxspeed"); }
+
+void Device::set_velocity(uint velocity) const { set_setting<>("maxspeed", velocity); }
+
 std::shared_ptr<Reply> Device::command(const Command cmd) const { return m_ctrl->command(m_address, cmd); }
 
 } // namespace zaber

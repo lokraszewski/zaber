@@ -54,7 +54,7 @@ Linear::~Linear() {}
  * \details
  * \warning    Requires m_range to be known.
  */
-void Linear::move_to_location(const double real_location)
+void Linear::move_to_real(const double real_location)
 {
   /* The range of movement is m_limit_max - m_limit_min, so the location we need
    * to move to is ((real_location/m_range) * (m_limit_max - m_limit_min)) +

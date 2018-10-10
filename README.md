@@ -23,7 +23,6 @@ make
 ## TODOs ##
 * Support multi axis devices. 
 * Support binary protocol.
-* Support multiple devices (chain configuration)
 
 
 ## Relevant Reading ##

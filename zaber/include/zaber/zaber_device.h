@@ -52,11 +52,19 @@ public:
   int                     get_home_position(void) const;
   uint8_t                 get_resolution(void) const;
   int                     get_max_velocity(void) const;
+  uint                    get_velocity(void) const;
+  void                    set_velocity(uint velocity) const;
 
   template <typename T>
   T get_setting(const std::string setting) const
   {
     return (command<std::string>(Command::Get, setting))->get<T>();
+  }
+
+  template <typename T>
+  void set_setting(const std::string setting, T value) const
+  {
+    command<>(Command::Set, setting, value);
   }
 
   std::shared_ptr<Reply> command(const Command cmd) const;
@@ -81,7 +89,7 @@ public:
    * \param[in]  real_location  The real location
    *
    */
-  virtual void move_to_location(const double real_location) {}
+  virtual void move_to_real(const double real_location) {}
 
   virtual void setup(void) {}
 

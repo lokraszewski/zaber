@@ -34,10 +34,50 @@ std::unique_ptr<Device> Controller::make_device(const DeviceID id, const Address
 
   switch (id)
   {
+  case DeviceID::X_LSQ075A:
+  case DeviceID::X_LSQ075A_E01:
+  case DeviceID::X_LSQ075B:
+  case DeviceID::X_LSQ075B_E01:
+  case DeviceID::X_LSQ075D:
+  case DeviceID::X_LSQ075D_E01:
+  case DeviceID::X_LSQ150A:
+  case DeviceID::X_LSQ150A_E01:
+  case DeviceID::X_LSQ150B:
+  case DeviceID::X_LSQ150B_E01:
+  case DeviceID::X_LSQ150D:
+  case DeviceID::X_LSQ150D_E01:
+  case DeviceID::X_LSQ300A:
+  case DeviceID::X_LSQ300A_E01:
+  case DeviceID::X_LSQ300B:
   case DeviceID::X_LSQ300B_E01:
+  case DeviceID::X_LSQ300D:
+  case DeviceID::X_LSQ300D_E01:
+  case DeviceID::X_LSQ450A:
+  case DeviceID::X_LSQ450A_E01:
+  case DeviceID::X_LSQ450B:
+  case DeviceID::X_LSQ450B_E01:
+  case DeviceID::X_LSQ450D:
+  case DeviceID::X_LSQ450D_E01:
+  case DeviceID::X_LSQ600A:
+  case DeviceID::X_LSQ600A_E01:
+  case DeviceID::X_LSQ600B:
+  case DeviceID::X_LSQ600B_E01:
+  case DeviceID::X_LSQ600D:
+  case DeviceID::X_LSQ600D_E01:
     m_log->trace("Creating linear device ({})", static_cast<uint>(id));
     return std::make_unique<Linear>(this, addr, id);
+  case DeviceID::X_RSW60A:
   case DeviceID::X_RSW60A_E03:
+  case DeviceID::X_RSW60A_S:
+  case DeviceID::X_RSW60A_SE03:
+  case DeviceID::X_RSW60A_SV1:
+  case DeviceID::X_RSW60A_SV2:
+  case DeviceID::X_RSW60C:
+  case DeviceID::X_RSW60C_E03:
+  case DeviceID::X_RSW60C_S:
+  case DeviceID::X_RSW60C_SE03:
+  case DeviceID::X_RSW60C_SV1:
+  case DeviceID::X_RSW60C_SV2:
     m_log->trace("Creating rotary device ({})", static_cast<uint>(id));
     return std::make_unique<Rotary>(this, addr, id);
   default:

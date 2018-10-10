@@ -97,6 +97,7 @@ std::ostream& operator<<(std::ostream& os, const Command& cmd)
   case Command::MoveMax: os << "move max"; break;
   case Command::Home: os << "home"; break;
   case Command::Get: os << "get"; break;
+  case Command::Set: os << "set"; break;
   case Command::Renumber: os << "renumber"; break;
   }
 

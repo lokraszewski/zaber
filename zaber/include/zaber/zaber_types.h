@@ -138,6 +138,7 @@ enum class Command
   MoveMax,
   Home,
   Get,
+  Set,
   Renumber,
   None,
 };

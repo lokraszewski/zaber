@@ -65,13 +65,13 @@ int run(int argc, char **argv)
       auto rotary = control.make_device_from_id(DeviceID::X_RSW60A_E03);
       rotary->home();
       rotary->wait_until_idle();
-      rotary->move_to_location(30.0);
+      rotary->move_to_real(30.0);
       rotary->wait_until_idle();
-      rotary->move_to_location(180.0);
+      rotary->move_to_real(180.0);
       rotary->wait_until_idle();
-      rotary->move_to_location(120.0);
+      rotary->move_to_real(120.0);
       rotary->wait_until_idle();
-      rotary->move_to_location(0.0);
+      rotary->move_to_real(0.0);
       rotary->wait_until_idle();
       rotary->home();
     }
@@ -93,11 +93,11 @@ int run(int argc, char **argv)
       linear->move_stored(2);
       linear->wait_until_idle();
 
-      // linear->move_to_location(150e-3); /*150mm*/
+      // linear->move_to_real(150e-3); /*150mm*/
       // linear->wait_until_idle();
-      // linear->move_to_location(300e-3); /*150mm*/
+      // linear->move_to_real(300e-3); /*150mm*/
       // linear->wait_until_idle();
-      // linear->move_to_location(0);
+      // linear->move_to_real(0);
       // linear->wait_until_idle();
     }
 
@@ -105,7 +105,7 @@ int run(int argc, char **argv)
       // auto linear = control.make_device_from_address(2);
       // linear->home();
       // linear->wait_until_idle();
-      // linear->move_to_location(150e-3); /*150mm*/
+      // linear->move_to_real(150e-3); /*150mm*/
       // linear->wait_until_idle();
     }
 #endif
