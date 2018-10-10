@@ -1,5 +1,5 @@
 # Zaber 
-C++ interface for Zaber family stages. Currently only one stage is supported. This project is still under development and in its early days so everything is subject to change. .
+C++ interface for Zaber family stages. Currently only supports single axis stages (X-LSQ & X-RSW). 
 
 ## Prerequisites
 * [cmake](https://cmake.org/)
@@ -12,13 +12,16 @@ cmake ..
 make
 ```
 
-## Running examples:
+## Running stage tests:
+Please ensure the stage is connected and your serial port matches the device. 
 ```
-./bin/zaber_app --help
+sudo ./bin/zaber_X_LSQ_test 
+sudo ./bin/zaber_X_RSW_test 
 ```
 
 ## Currently supported devices: ##
 * [X-RSW-E Rotary Stage](https://www.zaber.com/products/rotary-stages/X-RSW-E)
+* [X-LSQ linear stage](https://www.zaber.com/products/linear-stages/X-LSQ)
 
 ## TODOs ##
 * Support multi axis devices. 
