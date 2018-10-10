@@ -541,8 +541,20 @@ Device::Device(Controller* const ctrl, const Address address, const DeviceID id)
 
 Device::~Device() {}
 
+/**
+ * \date       10-Oct-2018
+ * \brief      Determines if busy.
+ *
+ * \return     True if busy, False otherwise.
+ *
+ * \details    Sends empty command to get the device status.
+ */
 bool Device::is_busy(void) const { return ((command(Command::None))->status == Status::BUSY); }
 
+/**
+ * \date       10-Oct-2018
+ * \brief      Simply poll the device until IDLE.
+ */
 void Device::wait_until_idle(void) const
 {
   while (is_busy())
@@ -554,7 +566,6 @@ void Device::wait_until_idle(void) const
  * \date       03-Oct-2018
  * \brief      Decelerates an axis and brings it to a halt.
  *
- * \details    { detailed_item_description }
  */
 void Device::stop(void) const { (void)command(Command::Stop); }
 
@@ -602,22 +613,65 @@ void Device::emergency_stop(void) const { (void)command(Command::EmergencyStop);
              respond with a rejection reply or behave unexpectedly.
 */
 void Device::home(void) const { (void)command(Command::Home); }
+
+/**
+ * \date       10-Oct-2018
+ * \brief      Resets the device, as it would appear after power up
+ *
+ * \details    This command sets the Setting Update Pending (NU) notification
+ *             flag and replies. Once all communication channels have been quiet
+ *             for 500 milliseconds, the device resets and clears the Setting
+ *             Update Pending (NU) flag.
+ */
 void Device::reset(void) const { (void)command(Command::SystemReset); }
+
+/**
+ * \date       10-Oct-2018
+ * \brief      Restores common device settings to their default values.
+ *
+ * \details    This command resets common settings to their default for the
+ *             device and peripheral. Communications settings are not modified.
+ */
 void Device::restore_defaults(void) const { (void)command(Command::SystemRestore); }
 
+/**
+ * \date       10-Oct-2018
+ * \brief      Stores a number of positions for axes for ease of movement.
+ *
+ * \param[in]  number  The number
+ * \param[in]  pos     The position
+ *
+ * \details    number is the stored position number to be set or retrieved. The
+ *             valid range is 1 - 16. position is a valid axis position to move
+ *             to and must be in the range of limit.min to limit.max. The
+ *             position defaults to 0 if not set.
+ */
 void Device::store_position(const uint8_t number, const size_t pos) const { (void)command<>(Command::StorePosition, number, pos); }
 
+/**
+ * \date       10-Oct-2018
+ * \brief      Stores a number of positions for axes for ease of movement.
+ *
+ * \param[in]  number  The number
+ *
+ * \details    number is the stored position number to be set or retrieved. The
+ *             valid range is 1 - 16. current specifies that the specified
+ *             stored position number be set to the current position, pos. If
+ *             none of the optional arguments are provided, the current value of
+ *             the stored position number will be returned.
+ */
 void Device::store_position(const uint8_t number) const { (void)command<>(Command::StorePosition, "current"); }
 
 /**
  * \author     lokraszewski
  *
  * \date       03-Oct-2018
- * \brief      stored moves the axis to a previously stored position.Refer to
- *             the tools storepos command for more information.
+ * \brief      stored moves the axis to a previously stored position.
  *
  * \param[in]  number  Number specifies the stored position number, from 1 - 16.
  *
+ * \details    Number specifies the stored position number, from 1 - 16. Refer
+ *             to the tools storepos command for more information.
  */
 void Device::move_stored(const uint8_t number) const { (void)command<>(Command::MoveStored, number); }
 
@@ -631,6 +685,70 @@ void Device::move_stored(const uint8_t number) const { (void)command<>(Command::
  *
  */
 void Device::move_absolute(const int value) { (void)command<>(Command::MoveAbsolute, value); }
+
+/**
+ * \author     lokraszewski
+ *
+ * \date       03-Oct-2018
+ * \brief      rel moves the axis by value microsteps, relative to the current
+ *             position.
+ *
+ * \param[in]  value  Value must be in the range [ limit.min - pos, limit.max -
+ *                    pos ].
+ *
+ */
+void Device::move_relative(int value) { (void)command<>(Command::MoveRelative, value); }
+
+/**
+ * \author     lokraszewski
+ * \date       03-Oct-2018
+ * \brief      vel moves the axis at the velocity specified by value until a
+ *             limit is reached.
+ *
+ * \param[in]  value  Value must be in the range [ -resolution * 16384,
+ *                    resolution * 16384 ].
+ *
+ */
+void Device::move_velocity(int value) { (void)command<>(Command::MoveVelocity, value); }
+/**
+ * \author     lokraszewski
+ * \date       03-Oct-2018
+ * \brief      min moves the axis to the minimum position, as specified by
+ *             limit.min.
+ *
+ */
+void Device::move_min(void) { (void)command(Command::MoveMin); }
+/**
+ * \author     lokraszewski
+ * \date       03-Oct-2018
+ * \brief      max moves the axis to the maximum position, as specified by
+ *             limit.max.
+ *
+ */
+void Device::move_max(void) { (void)command(Command::MoveMax); }
+
+/**
+ * \author     lokraszewski
+ * \date       03-Oct-2018
+ * \brief      index moves the axis to an index position. For a provided
+ *             number, this command directs the axis to move to the absolute
+ *             position (number - 1) * motion.index.dist.
+ *
+ * \param[in]  index  Note that only positive values of number are accepted.
+ *
+ * \details    For rotary devices with a non-zero limit.cycle.dist, the
+ *             command will be accepted if the targeted position is greater or
+ *             equal to 0 and less than limit.cycle.dist. The device will move
+ *             either clockwise or counter-clockwise, depending on which
+ *             direction yields the shortest distance to the target position.
+ *             If you want all index positions to be equally spaced around the
+ *             circle, set motion.index.dist to a factor of limit.cycle.dist.
+ *             For linear devices, or rotary devices where limit.cycle.dist is
+ *             zero, the command will be accepted if the targeted position is
+ *             within the valid travel of the device, i.e. in the range [
+ *             limit.min, limit.max ].
+ */
+void Device::move_index(unsigned int index) { (void)command<>(Command::MoveIndex, index); }
 
 std::shared_ptr<Reply> Device::command(const Command cmd) const { return m_ctrl->command(m_address, cmd); }
 

@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 09-10-2018
+ * @Last Modified time: 10-10-2018
  */
 
 #include "zaber/zaber_types.h"
@@ -92,6 +92,7 @@ std::ostream& operator<<(std::ostream& os, const Command& cmd)
   case Command::MoveRelative: os << "move rel"; break;
   case Command::MoveVelocity: os << "move vel"; break;
   case Command::MoveStored: os << "move stored"; break;
+  case Command::MoveIndex: os << "move index"; break;
   case Command::MoveMin: os << "move min"; break;
   case Command::MoveMax: os << "move max"; break;
   case Command::Home: os << "home"; break;

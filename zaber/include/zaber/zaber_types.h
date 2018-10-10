@@ -10,7 +10,7 @@
  * @Author: Lukasz
  * @Date:   03-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 09-10-2018
+ * @Last Modified time: 10-10-2018
  */
 
 namespace zaber
@@ -133,6 +133,7 @@ enum class Command
   MoveRelative,
   MoveVelocity,
   MoveStored,
+  MoveIndex,
   MoveMin,
   MoveMax,
   Home,
