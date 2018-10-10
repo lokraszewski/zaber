@@ -13,9 +13,8 @@
 static auto m_log = spdlog::stdout_color_mt("unit_test");
 using namespace zaber;
 
-TEST_CASE("Disconnected, no devices found.")
+TEST_CASE("Argument formatting.")
 {
-
   m_log->info("{}", Controller::make_arg_string("foo"));
   m_log->info("{}", Controller::make_arg_string("foo", "bar"));
   m_log->info("{}", Controller::make_arg_string(42));

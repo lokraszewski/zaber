@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 09-10-2018
+ * @Last Modified time: 10-10-2018
  */
 
 #include "zaber/zaber_device.h"
@@ -175,12 +175,9 @@ void Device::home(void) const { (void)command(Command::Home); }
 void Device::reset(void) const { (void)command(Command::SystemReset); }
 void Device::restore_defaults(void) const { (void)command(Command::SystemRestore); }
 
-void Device::store_position(const uint8_t number, const size_t pos) const
-{
-  (void)m_ctrl->command<>(m_address, Command::StorePosition, number, pos);
-}
+void Device::store_position(const uint8_t number, const size_t pos) const { (void)command<>(Command::StorePosition, number, pos); }
 
-void Device::store_position(const size_t number) const { (void)command<>(Command::StorePosition, "current"); }
+void Device::store_position(const uint8_t number) const { (void)command<>(Command::StorePosition, "current"); }
 
 /**
  * \author     lokraszewski
@@ -189,21 +186,19 @@ void Device::store_position(const size_t number) const { (void)command<>(Command
  * \brief      stored moves the axis to a previously stored position.Refer to
  *             the tools storepos command for more information.
  *
- * \param[in]  number  Number specifies the stored position number, from 1 -
- *                     16.
+ * \param[in]  number  Number specifies the stored position number, from 1 - 16.
  *
- * \details    { detailed_item_description }
  */
 void Device::move_stored(const uint8_t number) const { (void)command<>(Command::MoveStored, number); }
 
 /**
  * \author     lokraszewski
+ *
  * \date       03-Oct-2018
  * \brief      abs moves to the absolute position of value.
  *
  * \param[in]  value  Value must be in the range [ limit.min, limit.max ].
  *
- * \details    { detailed_item_description }
  */
 void Device::move_absolute(const int value) { (void)command<>(Command::MoveAbsolute, value); }
 

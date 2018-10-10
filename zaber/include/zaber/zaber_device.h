@@ -3,7 +3,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 09-10-2018
+ * @Last Modified time: 10-10-2018
  */
 
 #include "zaber/zaber_control.h"
@@ -161,15 +161,22 @@ public:
    *             limited ability to recover from a stalling condition. sin stop
    *             ends a sinusoidal motion when its current cycle completes.
    */
-  void                   move_sin(int amplitude, int period, int count = 0);
-  uint                   get_device_id(void);
-  int                    get_position(void);
+  void move_sin(int amplitude, int period, int count = 0);
+  uint get_device_id(void);
+  int  get_position(void);
+
   std::shared_ptr<Reply> command(const Command cmd) const;
 
   template <typename T>
   std::shared_ptr<Reply> command(const Command cmd, const T param) const
   {
     return m_ctrl->command<T>(m_address, cmd, param);
+  }
+
+  template <typename T, typename... Args>
+  std::shared_ptr<Reply> command(const Command cmd, const T param, Args... args) const
+  {
+    return m_ctrl->command<>(m_address, cmd, param, args...);
   }
 
   template <typename T>
