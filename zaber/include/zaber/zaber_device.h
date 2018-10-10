@@ -45,11 +45,14 @@ public:
   void                    store_position(const uint8_t number) const;
   void                    move_stored(const uint8_t number) const;
   void                    move_index(unsigned int index);
-  uint                    get_device_id(void);
-  int                     get_position(void);
+  DeviceID                get_device_id(void) const;
+  int                     get_position(void) const;
+  int                     get_max(void) const;
+  int                     get_min(void) const;
+  int                     get_home_position(void) const;
 
   template <typename T>
-  T get_setting(const std::string setting)
+  T get_setting(const std::string setting) const
   {
     return (command<std::string>(Command::Get, setting))->get<T>();
   }

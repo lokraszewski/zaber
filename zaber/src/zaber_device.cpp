@@ -750,6 +750,12 @@ void Device::move_max(void) { (void)command(Command::MoveMax); }
  */
 void Device::move_index(unsigned int index) { (void)command<>(Command::MoveIndex, index); }
 
+DeviceID Device::get_device_id(void) const { return m_id; }
+int      Device::get_position(void) const { return get_setting<int>("pos"); }
+int      Device::get_max(void) const { return get_setting<int>("limit.max"); }
+int      Device::get_min(void) const { return get_setting<int>("limit.min"); }
+int      Device::get_home_position(void) const { return get_setting<int>("limit.home.pos"); }
+
 std::shared_ptr<Reply> Device::command(const Command cmd) const { return m_ctrl->command(m_address, cmd); }
 
 } // namespace zaber
