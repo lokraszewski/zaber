@@ -18,78 +18,508 @@ namespace zaber
  *
  * \return     The range.
  *
+ * \details
+ * \warning    Please check that your device is supported.
  */
 double get_range(const DeviceID id)
 {
   switch (id)
   {
-
+  case DeviceID::X_LHM025A:
+  case DeviceID::X_LHM025A_E03:
+  case DeviceID::X_LHM025A_S:
+  case DeviceID::X_LHM025A_SE03:
+  case DeviceID::X_LRM025A:
+  case DeviceID::X_LRM025A_DE51:
+  case DeviceID::X_LRM025A_E03:
+  case DeviceID::X_LRM025B:
+  case DeviceID::X_LRM025B_DE51:
+  case DeviceID::X_LRM025B_E03:
+  case DeviceID::X_LSM025A:
+  case DeviceID::X_LSM025A_E03:
+  case DeviceID::X_LSM025A_S:
+  case DeviceID::X_LSM025A_SE03:
+  case DeviceID::X_LSM025A_SV1:
+  case DeviceID::X_LSM025A_SV2:
+  case DeviceID::X_LSM025B:
+  case DeviceID::X_LSM025B_E03:
+  case DeviceID::X_LSM025B_S:
+  case DeviceID::X_LSM025B_SE03:
+  case DeviceID::X_LSM025B_SV1:
+  case DeviceID::X_LSM025B_SV2:
+  case DeviceID::LHM025A_E03T3:
+  case DeviceID::LHM025A_T3:
   case DeviceID::LRM025A_E03T3:
   case DeviceID::LRM025A_T3:
   case DeviceID::LRM025B_E03T3:
   case DeviceID::LRM025B_T3:
-  case DeviceID::X_LHM025A:
-  case DeviceID::X_LHM025A_E03:
-  case DeviceID::X_LHM025A_S:
-  case DeviceID::X_LHM025A_SE03: return 25e-3;
+  case DeviceID::LSM025A_E03T4:
+  case DeviceID::LSM025A_M02T4:
+  case DeviceID::LSM025A_T4_rev_1:
+  case DeviceID::LSM025A_T4_rev_2:
+  case DeviceID::LSM025A_V1T4:
+  case DeviceID::LSM025A_V2T4:
+  case DeviceID::LSM025B_E03T4:
+  case DeviceID::LSM025B_T4_rev_1:
+  case DeviceID::LSM025B_T4_rev_2:
+  case DeviceID::LSM025B_V1T4:
+  case DeviceID::LSM025B_V2T4: return 25e-3;
+  case DeviceID::X_LHM050A:
+  case DeviceID::X_LHM050A_E03:
+  case DeviceID::X_LHM050A_S:
+  case DeviceID::X_LHM050A_SE03:
+  case DeviceID::X_LRM050A:
+  case DeviceID::X_LRM050A_DE51:
+  case DeviceID::X_LRM050A_E03:
+  case DeviceID::X_LRM050B:
+  case DeviceID::X_LRM050B_DE51:
+  case DeviceID::X_LRM050B_E03:
+  case DeviceID::X_LSM050A:
+  case DeviceID::X_LSM050A_E03:
+  case DeviceID::X_LSM050A_S:
+  case DeviceID::X_LSM050A_SE03:
+  case DeviceID::X_LSM050A_SV1:
+  case DeviceID::X_LSM050A_SV2:
+  case DeviceID::X_LSM050B:
+  case DeviceID::X_LSM050B_E03:
+  case DeviceID::X_LSM050B_S:
+  case DeviceID::X_LSM050B_SE03:
+  case DeviceID::X_LSM050B_SV1:
+  case DeviceID::X_LSM050B_SV2:
+  case DeviceID::LHM050A_E03T3:
+  case DeviceID::LHM050A_T3:
   case DeviceID::LRM050A_E03T3:
   case DeviceID::LRM050A_T3:
   case DeviceID::LRM050B_E03T3:
   case DeviceID::LRM050B_T3:
-  case DeviceID::X_LHM050A:
-  case DeviceID::X_LHM050A_E03:
-  case DeviceID::X_LHM050A_S:
-  case DeviceID::X_LHM050A_SE03: return 50e-3;
+  case DeviceID::LSM050A_E03T4:
+  case DeviceID::LSM050A_T4_rev_1:
+  case DeviceID::LSM050A_T4_rev_2:
+  case DeviceID::LSM050A_V1T4:
+  case DeviceID::LSM050A_V2T4:
+  case DeviceID::LSM050B_E03T4:
+  case DeviceID::LSM050B_T4_rev_1:
+  case DeviceID::LSM050B_T4_rev_2:
+  case DeviceID::LSM050B_V1T4:
+  case DeviceID::LSM050B_V2T4: return 50e-3;
+  case DeviceID::A_LSQ075A:
+  case DeviceID::A_LSQ075A_E01:
+  case DeviceID::A_LSQ075B:
+  case DeviceID::A_LSQ075B_E01:
+  case DeviceID::A_LSQ075D:
+  case DeviceID::A_LSQ075D_E01:
+  case DeviceID::X_LRQ075AL_DE51:
+  case DeviceID::X_LRQ075AL_DE51C:
+  case DeviceID::X_LRQ075AL_E01:
+  case DeviceID::X_LRQ075AL_E01C:
+  case DeviceID::X_LRQ075AL_SV1:
+  case DeviceID::X_LRQ075AL_SV2:
+  case DeviceID::X_LRQ075AP_DE51:
+  case DeviceID::X_LRQ075AP_DE51C:
+  case DeviceID::X_LRQ075AP_E01:
+  case DeviceID::X_LRQ075AP_E01C:
+  case DeviceID::X_LRQ075BL_DE51:
+  case DeviceID::X_LRQ075BL_DE51C:
+  case DeviceID::X_LRQ075BL_E01:
+  case DeviceID::X_LRQ075BL_E01C:
+  case DeviceID::X_LRQ075BL_SV1:
+  case DeviceID::X_LRQ075BL_SV2:
+  case DeviceID::X_LRQ075BP_DE51:
+  case DeviceID::X_LRQ075BP_DE51C:
+  case DeviceID::X_LRQ075BP_E01:
+  case DeviceID::X_LRQ075BP_E01C:
+  case DeviceID::X_LRQ075DL_E01:
+  case DeviceID::X_LRQ075DL_E01C:
+  case DeviceID::X_LRQ075DP_E01:
+  case DeviceID::X_LRQ075DP_E01C:
+  case DeviceID::X_LRQ075HL_DE51:
+  case DeviceID::X_LRQ075HL_DE51C:
+  case DeviceID::X_LRQ075HL_E01:
+  case DeviceID::X_LRQ075HL_E01C:
+  case DeviceID::X_LRQ075HP_DE51:
+  case DeviceID::X_LRQ075HP_DE51C:
+  case DeviceID::X_LRQ075HP_E01:
+  case DeviceID::X_LRQ075HP_E01C:
+  case DeviceID::X_LSM075A:
+  case DeviceID::X_LSM075A_E03:
+  case DeviceID::X_LSM075A_S:
+  case DeviceID::X_LSM075A_SE03:
+  case DeviceID::X_LSM075A_SV1:
+  case DeviceID::X_LSM075A_SV2:
+  case DeviceID::X_LSM075B:
+  case DeviceID::X_LSM075B_E03:
+  case DeviceID::X_LSM075B_S:
+  case DeviceID::X_LSM075B_SE03:
+  case DeviceID::X_LSM075B_SV1:
+  case DeviceID::X_LSM075B_SV2:
   case DeviceID::X_LSQ075A:
   case DeviceID::X_LSQ075A_E01:
   case DeviceID::X_LSQ075B:
   case DeviceID::X_LSQ075B_E01:
   case DeviceID::X_LSQ075D:
-  case DeviceID::X_LSQ075D_E01: return 75e-3;
+  case DeviceID::X_LSQ075D_E01:
+  case DeviceID::G_LSQ075A_T4:
+  case DeviceID::G_LSQ075B_T4:
+  case DeviceID::G_LSQ075D_T4:
+  case DeviceID::LRQ075AL_DE51CT3:
+  case DeviceID::LRQ075AL_DE51T3:
+  case DeviceID::LRQ075AL_E01CT3:
+  case DeviceID::LRQ075AL_E01T3:
+  case DeviceID::LRQ075AL_V1T3:
+  case DeviceID::LRQ075AL_V2T3:
+  case DeviceID::LRQ075AP_DE51CT3:
+  case DeviceID::LRQ075AP_DE51T3:
+  case DeviceID::LRQ075AP_E01CT3:
+  case DeviceID::LRQ075AP_E01T3:
+  case DeviceID::LRQ075BL_DE51CT3:
+  case DeviceID::LRQ075BL_DE51T3:
+  case DeviceID::LRQ075BL_E01CT3:
+  case DeviceID::LRQ075BL_E01T3:
+  case DeviceID::LRQ075BL_V1T3:
+  case DeviceID::LRQ075BL_V2T3:
+  case DeviceID::LRQ075BP_DE51CT3:
+  case DeviceID::LRQ075BP_DE51T3:
+  case DeviceID::LRQ075BP_E01CT3:
+  case DeviceID::LRQ075BP_E01T3:
+  case DeviceID::LRQ075DL_E01CT3:
+  case DeviceID::LRQ075DL_E01T3:
+  case DeviceID::LRQ075DL_V1T3:
+  case DeviceID::LRQ075DL_V2T3:
+  case DeviceID::LRQ075DP_E01CT3:
+  case DeviceID::LRQ075DP_E01T3:
+  case DeviceID::LRQ075HL_DE51CT3:
+  case DeviceID::LRQ075HL_DE51T3:
+  case DeviceID::LRQ075HL_E01CT3:
+  case DeviceID::LRQ075HL_E01T3:
+  case DeviceID::LRQ075HP_DE51CT3:
+  case DeviceID::LRQ075HP_DE51T3:
+  case DeviceID::LRQ075HP_E01CT3:
+  case DeviceID::LRQ075HP_E01T3:
+  case DeviceID::LSM075A_E03T4:
+  case DeviceID::LSM075A_T4_rev_1:
+  case DeviceID::LSM075A_T4_rev_2:
+  case DeviceID::LSM075A_V1T4:
+  case DeviceID::LSM075A_V2T4:
+  case DeviceID::LSM075B_E03T4:
+  case DeviceID::LSM075B_T4_rev_1:
+  case DeviceID::LSM075B_T4_rev_2:
+  case DeviceID::LSM075B_V1T4:
+  case DeviceID::LSM075B_V2T4:
+  case DeviceID::LSQ075A_E01T3:
+  case DeviceID::LSQ075A_T3:
+  case DeviceID::LSQ075B_E01T3:
+  case DeviceID::LSQ075B_T3:
+  case DeviceID::LSQ075D_E01T3:
+  case DeviceID::LSQ075D_T3: return 75e-3;
+  case DeviceID::X_LHM100A:
+  case DeviceID::X_LHM100A_E03:
+  case DeviceID::X_LHM100A_S:
+  case DeviceID::X_LHM100A_SE03:
+  case DeviceID::X_LRM100A:
+  case DeviceID::X_LRM100A_DE51:
+  case DeviceID::X_LRM100A_E03:
+  case DeviceID::X_LRM100B:
+  case DeviceID::X_LRM100B_DE51:
+  case DeviceID::X_LRM100B_E03:
+  case DeviceID::X_LRT0100AL_C:
+  case DeviceID::X_LRT0100AL_DE51C:
+  case DeviceID::X_LRT0100AL_E08C:
+  case DeviceID::X_LRT0100AP_C:
+  case DeviceID::X_LRT0100AP_DE51C:
+  case DeviceID::X_LRT0100AP_E08C:
+  case DeviceID::X_LRT0100BL_C:
+  case DeviceID::X_LRT0100BL_DE51C:
+  case DeviceID::X_LRT0100BL_E08C:
+  case DeviceID::X_LRT0100BP_C:
+  case DeviceID::X_LRT0100BP_DE51C:
+  case DeviceID::X_LRT0100BP_E08C:
+  case DeviceID::X_LRT0100DL_C:
+  case DeviceID::X_LRT0100DL_DE51C:
+  case DeviceID::X_LRT0100DL_E08C:
+  case DeviceID::X_LRT0100DP_C:
+  case DeviceID::X_LRT0100DP_DE51C:
+  case DeviceID::X_LRT0100DP_E08C:
+  case DeviceID::X_LRT0100HL_C:
+  case DeviceID::X_LRT0100HL_DE51C:
+  case DeviceID::X_LRT0100HL_E08C:
+  case DeviceID::X_LRT0100HP_C:
+  case DeviceID::X_LRT0100HP_DE51C:
+  case DeviceID::X_LRT0100HP_E08C:
+  case DeviceID::X_LSM100A:
+  case DeviceID::X_LSM100A_E03:
+  case DeviceID::X_LSM100A_S:
+  case DeviceID::X_LSM100A_SE03:
+  case DeviceID::X_LSM100A_SV1:
+  case DeviceID::X_LSM100A_SV2:
+  case DeviceID::X_LSM100B:
+  case DeviceID::X_LSM100B_E03:
+  case DeviceID::X_LSM100B_S:
+  case DeviceID::X_LSM100B_SE03:
+  case DeviceID::X_LSM100B_SV1:
+  case DeviceID::X_LSM100B_SV2:
+  case DeviceID::LHM100A_E03T3:
+  case DeviceID::LHM100A_T3:
   case DeviceID::LRM100A_E03T3:
   case DeviceID::LRM100A_T3:
   case DeviceID::LRM100B_E03T3:
   case DeviceID::LRM100B_T3:
-  case DeviceID::X_LHM100A:
-  case DeviceID::X_LHM100A_E03:
-  case DeviceID::X_LHM100A_S:
-  case DeviceID::X_LHM100A_SE03: return 100e-3;
-  case DeviceID::X_LHM150A:
-  case DeviceID::X_LHM150A_E03:
-  case DeviceID::X_LHM150A_S:
-  case DeviceID::X_LHM150A_SE03:
-  case DeviceID::X_LSQ150A:
-  case DeviceID::X_LSQ150A_E01:
-  case DeviceID::X_LSQ150B:
-  case DeviceID::X_LSQ150B_E01:
-  case DeviceID::X_LSQ150D:
-  case DeviceID::X_LSQ150D_E01: return 150e-3;
+  case DeviceID::LRT0100AL_CT3:
+  case DeviceID::LRT0100AL_DE51CT3:
+  case DeviceID::LRT0100AL_E08CT3:
+  case DeviceID::LRT0100AP_CT3:
+  case DeviceID::LRT0100AP_DE51CT3:
+  case DeviceID::LRT0100AP_E08CT3:
+  case DeviceID::LRT0100BL_CT3:
+  case DeviceID::LRT0100BL_DE51CT3:
+  case DeviceID::LRT0100BL_E08CT3:
+  case DeviceID::LRT0100BP_CT3:
+  case DeviceID::LRT0100BP_DE51CT3:
+  case DeviceID::LRT0100BP_E08CT3:
+  case DeviceID::LRT0100DL_CT3:
+  case DeviceID::LRT0100DL_DE51CT3:
+  case DeviceID::LRT0100DL_E08CT3:
+  case DeviceID::LRT0100DP_CT3:
+  case DeviceID::LRT0100DP_DE51CT3:
+  case DeviceID::LRT0100DP_E08CT3:
+  case DeviceID::LRT0100HL_CT3:
+  case DeviceID::LRT0100HL_DE51CT3:
+  case DeviceID::LRT0100HL_E08CT3:
+  case DeviceID::LRT0100HP_CT3:
+  case DeviceID::LRT0100HP_DE51CT3:
+  case DeviceID::LRT0100HP_E08CT3:
+  case DeviceID::LSM100A_E03T4:
+  case DeviceID::LSM100A_T4_rev_1:
+  case DeviceID::LSM100A_T4_rev_2:
+  case DeviceID::LSM100A_V1T4:
+  case DeviceID::LSM100A_V2T4:
+  case DeviceID::LSM100B_E03T4:
+  case DeviceID::LSM100B_T4_rev_1:
+  case DeviceID::LSM100B_T4_rev_2:
+  case DeviceID::LSM100B_V1T4:
+  case DeviceID::LSM100B_V2T4: return 100e-3;
+  case DeviceID::A_BAR200BLC:
+  case DeviceID::A_BAR200BLC_E01:
+  case DeviceID::A_BAR200BPC:
+  case DeviceID::A_BAR200BPC_E01:
+  case DeviceID::A_LAR200ALC:
+  case DeviceID::A_LAR200ALC_E01:
+  case DeviceID::A_LAR200APC:
+  case DeviceID::A_LAR200APC_E01:
+  case DeviceID::X_LHM200A:
+  case DeviceID::X_LHM200A_E03:
+  case DeviceID::X_LHM200A_S:
+  case DeviceID::X_LHM200A_SE03:
+  case DeviceID::X_LRM200A:
+  case DeviceID::X_LRM200A_DE51:
+  case DeviceID::X_LRM200A_E03:
+  case DeviceID::X_LRM200B:
+  case DeviceID::X_LRM200B_DE51:
+  case DeviceID::X_LRM200B_E03:
+  case DeviceID::X_LSM200A:
+  case DeviceID::X_LSM200A_E03:
+  case DeviceID::X_LSM200A_S:
+  case DeviceID::X_LSM200A_SE03:
+  case DeviceID::X_LSM200A_SV1:
+  case DeviceID::X_LSM200A_SV2:
+  case DeviceID::X_LSM200B:
+  case DeviceID::X_LSM200B_E03:
+  case DeviceID::X_LSM200B_S:
+  case DeviceID::X_LSM200B_SE03:
+  case DeviceID::X_LSM200B_SV1:
+  case DeviceID::X_LSM200B_SV2:
+  case DeviceID::BAR200BLC_E01T3:
+  case DeviceID::BAR200BLC_T3:
+  case DeviceID::BAR200BPC_E01T3:
+  case DeviceID::BAR200BPC_T3:
+  case DeviceID::LAR200ALC_E01T3:
+  case DeviceID::LAR200ALC_T3:
+  case DeviceID::LAR200APC_E01T3:
+  case DeviceID::LAR200APC_T3:
+  case DeviceID::LHM200A_E03T3:
+  case DeviceID::LHM200A_T3:
   case DeviceID::LRM200A_E03T3:
   case DeviceID::LRM200A_T3:
   case DeviceID::LRM200B_E03T3:
   case DeviceID::LRM200B_T3:
-  case DeviceID::X_LHM200A:
-  case DeviceID::X_LHM200A_E03:
-  case DeviceID::X_LHM200A_S:
-  case DeviceID::X_LHM200A_SE03: return 200e-3;
+  case DeviceID::LSM200A_E03T4:
+  case DeviceID::LSM200A_T4_rev_1:
+  case DeviceID::LSM200A_T4_rev_2:
+  case DeviceID::LSM200A_V1T4:
+  case DeviceID::LSM200A_V2T4:
+  case DeviceID::LSM200B_E03T4:
+  case DeviceID::LSM200B_T4_rev_1:
+  case DeviceID::LSM200B_T4_rev_2:
+  case DeviceID::LSM200B_V1T4:
+  case DeviceID::LSM200B_V2T4: return 200e-3;
+  case DeviceID::A_BAR300BLC:
+  case DeviceID::A_BAR300BLC_E01:
+  case DeviceID::A_BAR300BPC:
+  case DeviceID::A_BAR300BPC_E01:
+  case DeviceID::A_LAR300ALC:
+  case DeviceID::A_LAR300ALC_E01:
+  case DeviceID::A_LAR300APC:
+  case DeviceID::A_LAR300APC_E01:
+  case DeviceID::A_LSQ300A:
+  case DeviceID::A_LSQ300A_E01:
+  case DeviceID::A_LSQ300B:
+  case DeviceID::A_LSQ300B_E01:
+  case DeviceID::A_LSQ300D:
+  case DeviceID::A_LSQ300D_E01:
+  case DeviceID::X_LRQ300AL_DE51:
+  case DeviceID::X_LRQ300AL_DE51C:
+  case DeviceID::X_LRQ300AL_E01:
+  case DeviceID::X_LRQ300AL_E01C:
+  case DeviceID::X_LRQ300AL_SV1:
+  case DeviceID::X_LRQ300AL_SV2:
+  case DeviceID::X_LRQ300AP_DE51:
+  case DeviceID::X_LRQ300AP_DE51C:
+  case DeviceID::X_LRQ300AP_E01:
+  case DeviceID::X_LRQ300AP_E01C:
+  case DeviceID::X_LRQ300BL_DE51:
+  case DeviceID::X_LRQ300BL_DE51C:
+  case DeviceID::X_LRQ300BL_E01:
+  case DeviceID::X_LRQ300BL_E01C:
+  case DeviceID::X_LRQ300BL_SV1:
+  case DeviceID::X_LRQ300BL_SV2:
+  case DeviceID::X_LRQ300BP_DE51:
+  case DeviceID::X_LRQ300BP_DE51C:
+  case DeviceID::X_LRQ300BP_E01:
+  case DeviceID::X_LRQ300BP_E01C:
+  case DeviceID::X_LRQ300DL_E01:
+  case DeviceID::X_LRQ300DL_E01C:
+  case DeviceID::X_LRQ300DP_E01:
+  case DeviceID::X_LRQ300DP_E01C:
+  case DeviceID::X_LRQ300HL_DE51:
+  case DeviceID::X_LRQ300HL_DE51C:
+  case DeviceID::X_LRQ300HL_E01:
+  case DeviceID::X_LRQ300HL_E01C:
+  case DeviceID::X_LRQ300HP_DE51:
+  case DeviceID::X_LRQ300HP_DE51C:
+  case DeviceID::X_LRQ300HP_E01:
+  case DeviceID::X_LRQ300HP_E01C:
   case DeviceID::X_LSQ300A:
   case DeviceID::X_LSQ300A_E01:
   case DeviceID::X_LSQ300B:
   case DeviceID::X_LSQ300B_E01:
   case DeviceID::X_LSQ300D:
-  case DeviceID::X_LSQ300D_E01: return 300e-3;
-  case DeviceID::X_LSQ450A:
-  case DeviceID::X_LSQ450A_E01:
-  case DeviceID::X_LSQ450B:
-  case DeviceID::X_LSQ450B_E01:
-  case DeviceID::X_LSQ450D:
-  case DeviceID::X_LSQ450D_E01: return 450e-3;
-  case DeviceID::X_LSQ600A:
-  case DeviceID::X_LSQ600A_E01:
-  case DeviceID::X_LSQ600B:
-  case DeviceID::X_LSQ600B_E01:
-  case DeviceID::X_LSQ600D:
-  case DeviceID::X_LSQ600D_E01: return 600e-3;
+  case DeviceID::X_LSQ300D_E01:
+  case DeviceID::BAR300BLC_E01T3:
+  case DeviceID::BAR300BLC_T3:
+  case DeviceID::BAR300BPC_E01T3:
+  case DeviceID::BAR300BPC_T3:
+  case DeviceID::G_LSQ300A_T4:
+  case DeviceID::G_LSQ300B_T4:
+  case DeviceID::G_LSQ300D_T4:
+  case DeviceID::LAR300ALC_E01T3:
+  case DeviceID::LAR300ALC_T3:
+  case DeviceID::LAR300APC_E01T3:
+  case DeviceID::LAR300APC_T3:
+  case DeviceID::LRQ300AL_DE51CT3:
+  case DeviceID::LRQ300AL_DE51T3:
+  case DeviceID::LRQ300AL_E01CT3:
+  case DeviceID::LRQ300AL_E01T3:
+  case DeviceID::LRQ300AL_V1T3:
+  case DeviceID::LRQ300AL_V2T3:
+  case DeviceID::LRQ300AP_DE51CT3:
+  case DeviceID::LRQ300AP_DE51T3:
+  case DeviceID::LRQ300AP_E01CT3:
+  case DeviceID::LRQ300AP_E01T3:
+  case DeviceID::LRQ300BL_DE51CT3:
+  case DeviceID::LRQ300BL_DE51T3:
+  case DeviceID::LRQ300BL_E01CT3:
+  case DeviceID::LRQ300BL_E01T3:
+  case DeviceID::LRQ300BL_V1T3:
+  case DeviceID::LRQ300BL_V2T3:
+  case DeviceID::LRQ300BP_DE51CT3:
+  case DeviceID::LRQ300BP_DE51T3:
+  case DeviceID::LRQ300BP_E01CT3:
+  case DeviceID::LRQ300BP_E01T3:
+  case DeviceID::LRQ300DL_E01CT3:
+  case DeviceID::LRQ300DL_E01T3:
+  case DeviceID::LRQ300DL_V1T3:
+  case DeviceID::LRQ300DL_V2T3:
+  case DeviceID::LRQ300DP_E01CT3:
+  case DeviceID::LRQ300DP_E01T3:
+  case DeviceID::LRQ300HL_DE51CT3:
+  case DeviceID::LRQ300HL_DE51T3:
+  case DeviceID::LRQ300HL_E01CT3:
+  case DeviceID::LRQ300HL_E01T3:
+  case DeviceID::LRQ300HP_DE51CT3:
+  case DeviceID::LRQ300HP_DE51T3:
+  case DeviceID::LRQ300HP_E01CT3:
+  case DeviceID::LRQ300HP_E01T3:
+  case DeviceID::LSQ300A_E01T3:
+  case DeviceID::LSQ300A_T3:
+  case DeviceID::LSQ300B_E01T3:
+  case DeviceID::LSQ300B_T3:
+  case DeviceID::LSQ300D_E01T3:
+  case DeviceID::LSQ300D_T3: return 300e-3;
+  case DeviceID::A_LST0500A:
+  case DeviceID::A_LST0500A_C:
+  case DeviceID::A_LST0500A_E01:
+  case DeviceID::A_LST0500A_E01C:
+  case DeviceID::A_LST0500B:
+  case DeviceID::A_LST0500B_C:
+  case DeviceID::A_LST0500B_E01:
+  case DeviceID::A_LST0500B_E01C:
+  case DeviceID::A_LST0500D:
+  case DeviceID::A_LST0500D_C:
+  case DeviceID::A_LST0500D_E01:
+  case DeviceID::A_LST0500D_E01C:
+  case DeviceID::X_LRT0500AL_C:
+  case DeviceID::X_LRT0500AL_DE51C:
+  case DeviceID::X_LRT0500AL_E08C:
+  case DeviceID::X_LRT0500AP_C:
+  case DeviceID::X_LRT0500AP_DE51C:
+  case DeviceID::X_LRT0500AP_E08C:
+  case DeviceID::X_LRT0500BL_C:
+  case DeviceID::X_LRT0500BL_DE51C:
+  case DeviceID::X_LRT0500BL_E08C:
+  case DeviceID::X_LRT0500BP_C:
+  case DeviceID::X_LRT0500BP_DE51C:
+  case DeviceID::X_LRT0500BP_E08C:
+  case DeviceID::X_LRT0500DL_C:
+  case DeviceID::X_LRT0500DL_DE51C:
+  case DeviceID::X_LRT0500DL_E08C:
+  case DeviceID::X_LRT0500DP_C:
+  case DeviceID::X_LRT0500DP_DE51C:
+  case DeviceID::X_LRT0500DP_E08C:
+  case DeviceID::X_LRT0500HL_C:
+  case DeviceID::X_LRT0500HL_DE51C:
+  case DeviceID::X_LRT0500HL_E08C:
+  case DeviceID::X_LRT0500HP_C:
+  case DeviceID::X_LRT0500HP_DE51C:
+  case DeviceID::X_LRT0500HP_E08C:
+  case DeviceID::LRT0500AL_CT3:
+  case DeviceID::LRT0500AL_DE51CT3:
+  case DeviceID::LRT0500AL_E08CT3:
+  case DeviceID::LRT0500AP_CT3:
+  case DeviceID::LRT0500AP_DE51CT3:
+  case DeviceID::LRT0500AP_E08CT3:
+  case DeviceID::LRT0500BL_CT3:
+  case DeviceID::LRT0500BL_DE51CT3:
+  case DeviceID::LRT0500BL_E08CT3:
+  case DeviceID::LRT0500BP_CT3:
+  case DeviceID::LRT0500BP_DE51CT3:
+  case DeviceID::LRT0500BP_E08CT3:
+  case DeviceID::LRT0500DL_CT3:
+  case DeviceID::LRT0500DL_DE51CT3:
+  case DeviceID::LRT0500DL_E08CT3:
+  case DeviceID::LRT0500DP_CT3:
+  case DeviceID::LRT0500DP_DE51CT3:
+  case DeviceID::LRT0500DP_E08CT3:
+  case DeviceID::LRT0500HL_CT3:
+  case DeviceID::LRT0500HL_DE51CT3:
+  case DeviceID::LRT0500HL_E08CT3:
+  case DeviceID::LRT0500HP_CT3:
+  case DeviceID::LRT0500HP_DE51CT3:
+  case DeviceID::LRT0500HP_E08CT3:
+  case DeviceID::LST0500A_E01T3:
+  case DeviceID::LST0500A_T3:
+  case DeviceID::LST0500B_E01T3:
+  case DeviceID::LST0500B_T3:
+  case DeviceID::LST0500D_E01T3:
+  case DeviceID::LST0500D_T3: return 500e-3;
 
   default: return 0e0;
   }
