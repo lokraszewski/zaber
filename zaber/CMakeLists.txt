@@ -1,10 +1,12 @@
 
-set(TARGET_LIB_NAME ${CMAKE_PROJECT_NAME}_lib)
+set(TARGET_LIB_NAME ${CMAKE_PROJECT_NAME})
 
 add_library(${TARGET_LIB_NAME}
-  include/zaber/zaber.h
-  include/zaber/zaber_ascii.h
-  src/zaber.cpp
+  src/zaber_control.cpp
+  src/zaber_device.cpp
+  src/zaber_types.cpp
+  src/zaber_rotary.cpp
+  src/zaber_linear.cpp
  )
 
 target_include_directories(${TARGET_LIB_NAME} PUBLIC
@@ -26,9 +28,7 @@ add_executable(${CMAKE_PROJECT_NAME}_app  ${APP_SRC})
 target_link_libraries(${CMAKE_PROJECT_NAME}_app ${TARGET_LIB_NAME})
 
 
+message(STATUS "Testing : ${TESTS_ENABLED}")
 if(TESTS_ENABLED)
-  message(STATUS "Testing enabled.")
   add_subdirectory(test)
-else()
-  message(STATUS "Testing disabled.")
 endif()
