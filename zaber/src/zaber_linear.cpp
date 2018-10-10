@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   08-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 09-10-2018
+ * @Last Modified time: 10-10-2018
  */
 
 #include "zaber/zaber_linear.h"
@@ -66,9 +66,12 @@ void Linear::move_to_location(const double real_location)
     m_log->error(err);
     throw std::runtime_error(err);
   }
-  const auto microsteps = ((real_location / m_range) * (m_limit_max - m_limit_min)) + m_limit_min;
+  const auto microsteps = real_to_pos(real_location);
   m_log->trace("{} {}m, {} microsteps", __FUNCTION__, real_location, microsteps);
   move_absolute(microsteps);
 }
+
+double Linear::pos_to_real(const int pos) const { return ((pos - m_limit_min) * m_range) / (m_limit_max - m_limit_min); }
+int    Linear::real_to_pos(const double real) const { return ((real / m_range) * (m_limit_max - m_limit_min)) + m_limit_min; }
 
 } // namespace zaber

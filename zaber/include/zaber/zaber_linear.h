@@ -16,9 +16,10 @@ public:
   Linear() = delete;
   virtual ~Linear();
 
-  virtual void move_to_location(const double real_location) override;
-
-  void set_range(const double range) { m_range = range; }
+  virtual void   move_to_location(const double real_location) override;
+  virtual double pos_to_real(const int pos) const override;
+  virtual int    real_to_pos(const double real) const override;
+  void           set_range(const double range) { m_range = range; }
 
 private:
   size_t m_limit_max;

@@ -50,6 +50,8 @@ public:
   int                     get_max(void) const;
   int                     get_min(void) const;
   int                     get_home_position(void) const;
+  uint8_t                 get_resolution(void) const;
+  int                     get_max_velocity(void) const;
 
   template <typename T>
   T get_setting(const std::string setting) const
@@ -82,6 +84,9 @@ public:
   virtual void move_to_location(const double real_location) {}
 
   virtual void setup(void) {}
+
+  virtual double pos_to_real(const int pos) const { return 0.0; }
+  virtual int    real_to_pos(const double real) const { return 0; }
 
 private:
 protected:
