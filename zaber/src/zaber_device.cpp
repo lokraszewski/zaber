@@ -759,6 +759,9 @@ uint8_t  Device::get_resolution(void) const { return get_setting<uint8_t>("resol
 int      Device::get_max_velocity(void) const
 {
   const auto res = get_resolution();
+  // The velocity range is given as  [ -resolution * 16384, resolution * 16384
+  // ]. See https://www.zaber.com/wiki/Manuals/ASCII_Protocol_Manual#move Here
+  // we just return the positive limit and assume the negative is the inverse
   return 16384 * res;
 }
 
