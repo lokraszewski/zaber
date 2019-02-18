@@ -26,13 +26,14 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-# Spdlog
-set(spdlog_SOURCE_DIR vendor/spdlog)
-include_directories(${spdlog_SOURCE_DIR}/include)
-
-# FMT library.
-add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
-set(LIBRARIES ${LIBRARIES} fmt::fmt-header-only)
+conan_cmake_run(
+  REQUIRES fmt/5.2.1@bincrafters/stable
+  REQUIRES spdlog/1.2.1@bincrafters/stable
+  REQUIRES catch2/2.4.1@bincrafters/stable
+  BASIC_SETUP
+  CMAKE_TARGETS
+  BUILD fmt spdlog catch2 boost
+)
 
 # Serial lib
 add_subdirectory(vendor/serial)
@@ -42,15 +43,7 @@ set(LIBRARIES ${LIBRARIES} serial)
 add_subdirectory(vendor/cxxopts)
 set(LIBRARIES ${LIBRARIES} cxxopts)
 
-message(STATUS "Finished adding libraries: ")
-foreach (_lib ${LIBRARIES})
-    message(STATUS "  ${_lib}")
-endforeach()
-
 add_subdirectory(${PROJECT_NAME})
-
-message("${TESTS_ENABLED}")
-message("${EXAMPLE_ENABLED}")
 
 if(TESTS_ENABLED)
 add_subdirectory(test)
