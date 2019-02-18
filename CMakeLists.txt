@@ -32,7 +32,7 @@ conan_cmake_run(
   REQUIRES catch2/2.4.1@bincrafters/stable
   BASIC_SETUP
   CMAKE_TARGETS
-  BUILD fmt spdlog catch2 boost
+  BUILD fmt spdlog catch2
 )
 
 # Serial lib

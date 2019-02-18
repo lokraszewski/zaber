@@ -6,7 +6,7 @@
 #include "serial/serial.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include "zaber/zaber.h"
 
