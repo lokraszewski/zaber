@@ -38,7 +38,6 @@ TEST_CASE("Expected device is found and works correctly.")
 
   const auto max           = dut->get_max();
   const auto min           = dut->get_min();
-  const auto home_pos      = dut->get_home_position();
   const auto mid_point     = dut->real_to_pos(180.0);
   const auto pos_increment = dut->real_to_pos(10.0);
   const auto default_speed = dut->get_velocity();

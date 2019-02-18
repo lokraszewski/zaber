@@ -12,16 +12,21 @@ foreach( test_file ${TESTS_FILES} )
     # I used a simple string replace, to cut off .cpp.
     string( REPLACE ".cpp" "" testname ${test_file} )
 
+    message("Adding ${testname} made from ${test_file}, linking with ${PROJECT_NAME}")
 
-    message("Adding ${testname} made from ${test_file}, linking with ${TARGET_LIB_NAME}")
+    add_executable( ${testname}
+      ${test_file} )
 
-
-    add_executable( ${testname} ${test_file} )
     # Make sure YourLib is linked to each app
-    target_link_libraries(
-      ${testname}
-      ${TARGET_LIB_NAME}
-      Catch )
+    target_link_libraries( ${testname}
+      ${PROJECT_NAME}
+      Catch
+      )
+
+    set_target_properties( ${testname}
+      PROPERTIES
+        CXX_STANDARD 14
+    )
 endforeach( test_file ${APP_SOURCES} )
 
 

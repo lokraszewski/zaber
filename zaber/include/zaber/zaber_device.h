@@ -3,7 +3,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 10-10-2018
+ * @Last Modified time: 18-02-2019
  */
 
 #include "zaber/zaber_control.h"
@@ -89,12 +89,20 @@ public:
    * \param[in]  real_location  The real location
    *
    */
-  virtual void move_to_real(const double real_location) {}
+  virtual void move_to_real(const double) {}
 
   virtual void setup(void) {}
 
-  virtual double pos_to_real(const int pos) const { return 0.0; }
-  virtual int    real_to_pos(const double real) const { return 0; }
+  virtual double pos_to_real(const int pos) const
+  {
+    (void)pos;
+    return 0.0;
+  }
+  virtual int real_to_pos(const double real) const
+  {
+    (void)real;
+    return 0;
+  }
 
 private:
 protected:

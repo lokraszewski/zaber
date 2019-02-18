@@ -1,45 +1,25 @@
+cmake_minimum_required(VERSION 3.9)
 
-cmake_minimum_required(VERSION 2.8)
+project(zaber
+  VERSION 1.0.0
+  LANGUAGES CXX
+  )
 
-project(zaber)
-set(PROJECT_VERSION 0.0.0)
-set(PROJECT_BRIEF "\"Driver for the zaber motion control modules. \"")
-
+include(cmake/conan.cmake)
 
 # Enable/disable testing
 option(TESTS_ENABLED "Enable automatic tests" ON)
-# Enable/disable test coverage
+option(EXAMPLE_ENABLED "Enable application example" OFF)
 option(COVERAGE_ENABLED "Enable test coverage" OFF)
-# Turn on verbose makefile.
-# set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
-
-if(COVERAGE_ENABLED)
-    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -fPIC -O0 -ggdb -fprofile-arcs -ftest-coverage")
-else()
-    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -O0 -ggdb")
-endif()
-
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-
-# Doxygen module search.
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-    add_custom_target(docs
-        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen" VERBATIM
-    )
-endif(DOXYGEN_FOUND)
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_compile_options("-Wall" "-Wextra" "-Werror" "$<$<CONFIG:RELEASE>:-O3>")
 
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, defaulting to Debug")
@@ -67,4 +47,16 @@ foreach (_lib ${LIBRARIES})
     message(STATUS "  ${_lib}")
 endforeach()
 
-add_subdirectory(zaber)
+add_subdirectory(${PROJECT_NAME})
+
+message("${TESTS_ENABLED}")
+message("${EXAMPLE_ENABLED}")
+
+if(TESTS_ENABLED)
+add_subdirectory(test)
+endif(TESTS_ENABLED)
+
+if(EXAMPLE_ENABLED)
+add_subdirectory(example)
+endif(EXAMPLE_ENABLED)
+
