@@ -9,6 +9,7 @@ target_include_directories(zaber_example
 
 target_link_libraries(zaber_example
   ${PROJECT_NAME}
+  cxxopts
 )
 
 set_target_properties(zaber_example

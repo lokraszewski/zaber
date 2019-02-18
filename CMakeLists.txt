@@ -39,10 +39,6 @@ conan_cmake_run(
 add_subdirectory(vendor/serial)
 set(LIBRARIES ${LIBRARIES} serial)
 
-# cxxopts
-add_subdirectory(vendor/cxxopts)
-set(LIBRARIES ${LIBRARIES} cxxopts)
-
 add_subdirectory(${PROJECT_NAME})
 
 if(TESTS_ENABLED)
@@ -50,6 +46,8 @@ add_subdirectory(test)
 endif(TESTS_ENABLED)
 
 if(EXAMPLE_ENABLED)
+# cxxopts
+add_subdirectory(vendor/cxxopts)
 add_subdirectory(example)
 endif(EXAMPLE_ENABLED)
 
