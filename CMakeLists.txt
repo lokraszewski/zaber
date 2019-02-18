@@ -8,7 +8,7 @@ project(zaber
 include(cmake/conan.cmake)
 
 # Enable/disable testing
-option(TESTS_ENABLED "Enable automatic tests" ON)
+option(TESTS_ENABLED "Enable automatic tests" OFF)
 option(EXAMPLE_ENABLED "Enable application example" OFF)
 option(COVERAGE_ENABLED "Enable test coverage" OFF)
 
@@ -19,6 +19,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 add_compile_options("-Wall" "-Wextra" "-Werror" "$<$<CONFIG:RELEASE>:-O3>")
 
 if (NOT CMAKE_BUILD_TYPE)
