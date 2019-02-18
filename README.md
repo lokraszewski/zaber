@@ -1,4 +1,7 @@
 # Zaber 
+![](https://img.shields.io/badge/zaber-0.0.0-brightgreen.svg)
+[![Build Status](https://travis-ci.com/lokraszewski/zaber.svg?branch=master)](https://travis-ci.com/lokraszewski/zaber) 
+
 C++ interface for Zaber family stages. Currently only supports single axis stages (X-LSQ & X-RSW). 
 
 ## Prerequisites
