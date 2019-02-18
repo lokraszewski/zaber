@@ -2,7 +2,7 @@
  * @Author: Lukasz
  * @Date:   04-10-2018
  * @Last Modified by:   Lukasz
- * @Last Modified time: 10-10-2018
+ * @Last Modified time: 18-02-2019
  */
 
 #include "zaber/zaber_device.h"
@@ -660,7 +660,11 @@ void Device::store_position(const uint8_t number, const size_t pos) const { (voi
  *             none of the optional arguments are provided, the current value of
  *             the stored position number will be returned.
  */
-void Device::store_position(const uint8_t number) const { (void)command<>(Command::StorePosition, "current"); }
+void Device::store_position(const uint8_t number) const
+{
+  (void)number;
+  (void)command<>(Command::StorePosition, "current");
+}
 
 /**
  * \author     lokraszewski
