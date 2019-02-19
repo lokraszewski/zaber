@@ -24,8 +24,8 @@ using std::vector;
 
 static auto m_log = spdlog::stdout_color_mt("app");
 
-#define TEST_ROTARY 0
-#define TEST_LINEAR 1
+#define TEST_ROTARY 1
+#define TEST_LINEAR 0
 
 int run(int argc, char **argv)
 {
@@ -63,16 +63,23 @@ int run(int argc, char **argv)
     {
       /* Rotary test. */
       auto rotary = control.make_device_from_id(DeviceID::X_RSW60A_E03);
+
+      m_log->info("Homing");
       rotary->home();
       rotary->wait_until_idle();
+      m_log->info("Moving to {}", 30.0);
       rotary->move_to_real(30.0);
       rotary->wait_until_idle();
+      m_log->info("Moving to {}", 180.0);
       rotary->move_to_real(180.0);
       rotary->wait_until_idle();
-      rotary->move_to_real(120.0);
-      rotary->wait_until_idle();
-      rotary->move_to_real(0.0);
-      rotary->wait_until_idle();
+      // m_log->info("Moving to {}", 120.0);
+      // rotary->move_to_real(120.0);
+      // rotary->wait_until_idle();
+      // m_log->info("Moving to {}", 0.0);
+      // rotary->move_to_real(0.0);
+      // rotary->wait_until_idle();
+      m_log->info("Homing");
       rotary->home();
     }
 #endif
