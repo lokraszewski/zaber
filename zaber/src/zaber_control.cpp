@@ -15,16 +15,9 @@ namespace zaber
 
 std::shared_ptr<spdlog::logger> Controller::m_log = spdlog::stdout_color_mt("zaber");
 
-Controller::Controller(const Port port) : m_port(port)
-{
-  m_log->trace("{}", __FUNCTION__);
-  if (m_port == nullptr)
-  {
-    auto err = "Serial port cannot be null!";
-    m_log->error(err);
-    throw std::invalid_argument(err);
-  }
-}
+Controller::Controller(const Port port) : m_port(port) { m_log->trace("{}", __FUNCTION__); }
+
+Controller::Controller() : m_port(nullptr) { m_log->trace("{}", __FUNCTION__); }
 
 Controller::~Controller() {}
 
