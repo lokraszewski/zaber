@@ -15,8 +15,14 @@ public:
   typedef std::shared_ptr<serial::Serial> Port;    /** Serial port type. */
 
   Controller(const Port port);
-  Controller() = delete;
+  Controller();
   ~Controller();
+
+  void set_port(const Port port)
+  {
+    m_port = port;
+    discover();
+  }
 
   template <typename T>
   static std::string make_arg_string(T first)
@@ -32,6 +38,8 @@ public:
 
   std::shared_ptr<Reply> command(const uint address, const Command command)
   {
+    check_port();
+
     const auto packet = fmt::format("/{} {}\n", address, command);
     m_log->trace("{}", packet);
     m_port->write(packet);
@@ -50,6 +58,7 @@ public:
   template <typename T>
   std::shared_ptr<Reply> command(const uint address, const Command command, const T param)
   {
+    check_port();
     const auto packet = fmt::format("/{} {} {}\n", address, command, param);
     m_log->trace("{}", packet);
     m_port->write(packet);
@@ -67,6 +76,7 @@ public:
   template <typename T, typename... Args>
   std::shared_ptr<Reply> command(const uint address, const Command command, T first, Args... args)
   {
+    check_port();
     const auto packet = fmt::format("/{} {} {}\n", address, command, make_arg_string(first, args...));
     m_log->trace("{}", packet);
     m_port->write(packet);
@@ -93,6 +103,7 @@ public:
    */
   std::vector<std::shared_ptr<Reply>> broadcast(const Command command)
   {
+    check_port();
     const auto packet = fmt::format("/{}\n", command);
     m_log->trace("{}", packet);
     m_port->write(packet);
@@ -102,6 +113,7 @@ public:
   template <typename T>
   std::vector<std::shared_ptr<Reply>> broadcast(const Command command, const T param)
   {
+    check_port();
     const auto packet = fmt::format("/{} {}\n", command, param);
     m_log->trace("{}", packet);
     m_port->write(packet);
@@ -110,6 +122,7 @@ public:
 
   std::vector<std::shared_ptr<Reply>> recieve_multiple_reply(uint max_replies = 100)
   {
+    check_port();
     std::vector<std::shared_ptr<Reply>> reply;
 
     reply.reserve(max_replies);
@@ -139,6 +152,7 @@ public:
   std::shared_ptr<Reply> recieve_reply()
   {
 
+    check_port();
     auto response = m_port->readline(MAX_REPLY_LENGTH, "\n");
     if (response.size() == 0)
     {
@@ -163,6 +177,7 @@ public:
    */
   uint discover(void)
   {
+    check_port();
     /* Drop all previously known devies since renumber could corrupt the
      * mapping. */
     m_dev_map.clear();
@@ -203,11 +218,20 @@ private:
   static constexpr auto                  MAX_REPLY_LENGTH   = 50;
   static constexpr auto                  MAX_COMMAND_LENGTH = 50;
   static std::shared_ptr<spdlog::logger> m_log;
+  std::map<uint, uint>                   m_dev_map; /* map of address to device type. */
 
-  std::map<uint, uint> m_dev_map; /* map of address to device type. */
+  void check_port(void)
+  {
+    if (m_port == nullptr)
+    {
+      const auto err = "No serial port!";
+      m_log->error("{}", err);
+      throw std::runtime_error(err);
+    }
+  }
 
 protected:
-  const Port m_port;
+  Port m_port;
 };
 
 } // namespace zaber

@@ -101,12 +101,3 @@ install(
 )
 
 
-# set(APP_SRC main.cpp)
-# add_executable(${CMAKE_PROJECT_NAME}_app  ${APP_SRC})
-# target_link_libraries(${CMAKE_PROJECT_NAME}_app ${TARGET_LIB_NAME})
-
-
-# message(STATUS "Testing : ${TESTS_ENABLED}")
-# if(TESTS_ENABLED)
-#   add_subdirectory(test)
-# endif()
