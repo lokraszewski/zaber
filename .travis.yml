@@ -43,4 +43,4 @@ install:
 
 script:
   - mkdir build && cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE && make
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTESTS_ENABLED=ON-DEXAMPLE_ENABLED=ON && make

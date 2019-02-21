@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 project(zaber
-  VERSION 1.0.0
+  VERSION 1.0.1
   LANGUAGES CXX
   )
 
@@ -34,12 +34,11 @@ conan_cmake_run(
   BASIC_SETUP
   CMAKE_TARGETS
   BUILD fmt spdlog catch2
+
 )
 
 # Serial lib
 add_subdirectory(vendor/serial)
-set(LIBRARIES ${LIBRARIES} serial)
-
 add_subdirectory(${PROJECT_NAME})
 
 if(TESTS_ENABLED)
